@@ -1,6 +1,6 @@
 {
-    "name": "zakirjarir/rbac-automator",
-    "description": "An automated RBAC system for Laravel with Module support.",
+    "name": "zakirjarir/zrbac",
+    "description": "An automated Scaffolding RBAC system for Laravel with GUI, Modules, and Auto-Seeder.",
     "type": "library",
     "license": "MIT",
     "authors": [
