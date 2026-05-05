@@ -104,8 +104,22 @@ class InstallRbac extends Command
     protected function appendRoutes()
     {
         $routeFile = base_path('routes/web.php');
-        $routes = "\n\n// RBAC Routes\nRoute::group(['prefix' => 'rbac', 'as' => 'rbac.', 'namespace' => 'App\Http\Controllers\Rbac', 'middleware' => ['web', 'auth']], function() {\n    Route::get('/dashboard', function() { return view('rbac.layout'); })->name('dashboard');\n    Route::resource('roles', 'RoleController');\n    Route::get('/modules', 'ModuleController@index')->name('modules.index');\n    Route::post('/modules', 'ModuleController@store')->name('modules.store');\n    Route::post('/modules/{module}/permissions', 'ModuleController@addPermission')->name('modules.permissions.store');\n    Route::post('/generate-seeder', 'ModuleController@generateSeeder')->name('generate-seeder');\n});\n";
-        
+
+        $routes = <<<'ROUTES'
+
+
+// RBAC Routes
+// NOTE: Add your own auth middleware (e.g. 'auth') if needed.
+Route::group(['prefix' => 'rbac', 'as' => 'rbac.', 'namespace' => 'App\Http\Controllers\Rbac', 'middleware' => ['web']], function () {
+    Route::get('/dashboard', function () { return view('rbac.layout'); })->name('dashboard');
+    Route::resource('roles', 'RoleController');
+    Route::get('/modules', 'ModuleController@index')->name('modules.index');
+    Route::post('/modules', 'ModuleController@store')->name('modules.store');
+    Route::post('/modules/{module}/permissions', 'ModuleController@addPermission')->name('modules.permissions.store');
+    Route::post('/generate-seeder', 'ModuleController@generateSeeder')->name('generate-seeder');
+});
+ROUTES;
+
         if (!Str::contains(File::get($routeFile), 'RBAC Routes')) {
             File::append($routeFile, $routes);
             $this->line('   Updated: routes/web.php');
