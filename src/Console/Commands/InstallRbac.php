@@ -23,6 +23,7 @@ class InstallRbac extends Command
         $this->publishStub('Models/Permission.stub', app_path('Models/Permission.php'), ['namespace' => $namespace]);
 
         // 2. Copy Middleware
+        $this->ensureDirectoryExists(app_path('Http/Middleware'));
         $this->publishStub('Middleware/CheckPermission.stub', app_path('Http/Middleware/CheckPermission.php'), ['namespace' => $namespace]);
 
         // 3. Copy Trait
