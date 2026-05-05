@@ -1,0 +1,80 @@
+<?php
+
+namespace {{namespace}}Http\Controllers\Rbac;
+
+use {{namespace}}Http\Controllers\Controller;
+use {{namespace}}Models\Module;
+use {{namespace}}Models\Role;
+use {{namespace}}Models\Permission;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+
+class ModuleController extends Controller
+{
+    public function index()
+    {
+        $modules = Module::with('permissions')->get();
+        return view('rbac.modules.index', compact('modules'));
+    }
+
+    public function generateSeeder()
+    {
+        $modules = Module::with('permissions')->get();
+        $roles = Role::with('permissions')->get();
+        $namespace = "{{namespace}}";
+
+        $seederContent = "<?php\n\nnamespace Database\Seeders;\n\nuse Illuminate\Database\Seeder;\nuse {$namespace}Models\Module;\nuse {$namespace}Models\Role;\nuse {$namespace}Models\Permission;\n\nclass RbacSeeder extends Seeder\n{\n    public function run()\n    {\n";
+
+        // Export Modules and Permissions
+        foreach ($modules as $module) {
+            $seederContent .= "        \$module = Module::updateOrCreate(['slug' => '{$module->slug}'], [\n";
+            $seederContent .= "            'name' => '{$module->name}',\n";
+            $seederContent .= "            'icon' => '{$module->icon}',\n";
+            $seederContent .= "            'status' => " . ($module->status ? 'true' : 'false') . ",\n";
+            $seederContent .= "        ]);\n\n";
+
+            foreach ($module->permissions as $permission) {
+                $seederContent .= "        Permission::updateOrCreate(['slug' => '{$permission->slug}'], [\n";
+                $seederContent .= "            'module_id' => \$module->id,\n";
+                $seederContent .= "            'name' => '{$permission->name}',\n";
+                $seederContent .= "        ]);\n";
+            }
+            $seederContent .= "\n";
+        }
+
+        // Export Roles and their Permissions
+        foreach ($roles as $role) {
+            $seederContent .= "        \$role = Role::updateOrCreate(['slug' => '{$role->slug}'], [\n";
+            $seederContent .= "            'name' => '{$role->name}',\n";
+            $seederContent .= "            'description' => '{$role->description}',\n";
+            $seederContent .= "        ]);\n";
+            
+            $permIds = $role->permissions->pluck('slug')->toArray();
+            if (!empty($permIds)) {
+                $permList = "'" . implode("', '", $permIds) . "'";
+                $seederContent .= "        \$role->permissions()->sync(Permission::whereIn('slug', [$permList])->pluck('id'));\n";
+            }
+            $seederContent .= "\n";
+        }
+
+        $seederContent .= "    }\n}\n";
+
+        File::put(database_path('seeders/RbacSeeder.php'), $seederContent);
+
+        return back()->with('success', 'RbacSeeder.php has been generated successfully in database/seeders/');
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate(['name' => 'required|unique:modules,name']);
+        Module::create(['name' => $request->name, 'slug' => str($request->name)->slug(), 'icon' => $request->icon]);
+        return back()->with('success', 'Module created successfully.');
+    }
+
+    public function addPermission(Request $request, Module $module)
+    {
+        $request->validate(['name' => 'required']);
+        $module->permissions()->create(['name' => $request->name, 'slug' => str($request->name)->slug()]);
+        return back()->with('success', 'Permission added.');
+    }
+}

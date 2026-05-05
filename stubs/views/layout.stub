@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RBAC Premium Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-light: #6366f1;
+            --secondary: #1e293b;
+            --bg: #f8fafc;
+            --sidebar-bg: #0f172a;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); display: flex; overflow-x: hidden; }
+
+        /* Sidebar Styling */
+        .sidebar {
+            width: 280px;
+            height: 100vh;
+            background: var(--sidebar-bg);
+            color: white;
+            position: fixed;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .sidebar-menu {
+            flex: 1;
+            padding: 1.5rem 1rem;
+            overflow-y: auto;
+        }
+
+        .menu-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            margin: 1.5rem 0 0.75rem 0.75rem;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-item {
+            margin-bottom: 4px;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 0.875rem 1rem;
+            color: #94a3b8;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .nav-link i { font-size: 1.1rem; width: 24px; text-align: center; }
+
+        /* Dropdown Logic */
+        .dropdown-menu { display: none; padding-left: 1rem; margin-top: 4px; }
+        .has-dropdown.open .dropdown-menu { display: block; }
+        .has-dropdown .arrow { margin-left: auto; transition: transform 0.3s; }
+        .has-dropdown.open .arrow { transform: rotate(180deg); }
+
+        /* Main Content */
+        .wrapper { margin-left: 280px; width: calc(100% - 280px); display: flex; flex-direction: column; }
+
+        /* Topbar */
+        .topbar {
+            height: 70px;
+            background: white;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f1f5f9;
+            padding: 8px 16px;
+            border-radius: 10px;
+            width: 300px;
+        }
+        .search-box input { border: none; background: none; outline: none; padding-left: 10px; width: 100%; }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--border);
+        }
+
+        .profile-info { line-height: 1.2; }
+        .profile-name { font-weight: 600; font-size: 0.9rem; }
+        .profile-role { font-size: 0.75rem; color: var(--text-muted); }
+
+        /* Content Area */
+        .main-content { padding: 2rem; }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            border: 1px solid var(--border);
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-success { background: var(--success); color: white; }
+        .btn-success:hover { filter: brightness(1.1); }
+
+        .sync-box {
+            background: rgba(16, 185, 129, 0.1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            border: 1px dashed var(--success);
+            text-align: center;
+            margin-top: auto;
+            margin: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-shield-halved text-primary"></i>
+            <span>Z-RBAC</span>
+        </div>
+
+        <div class="sidebar-menu">
+            <div class="menu-label">Main</div>
+            <a href="#" class="nav-link active"><i class="fas fa-home"></i> Dashboard</a>
+
+            <div class="menu-label">Access Control</div>
+            <div class="nav-item has-dropdown" id="rbacDropdown">
+                <a href="javascript:void(0)" class="nav-link" onclick="toggleDropdown('rbacDropdown')">
+                    <i class="fas fa-users-gear"></i>
+                    <span>RBAC Settings</span>
+                    <i class="fas fa-chevron-down arrow"></i>
+                </a>
+                <div class="dropdown-menu">
+                    <a href="{{ route('rbac.roles.index') }}" class="nav-link">Roles List</a>
+                    <a href="{{ route('rbac.modules.index') }}" class="nav-link">Modules & Perms</a>
+                </div>
+            </div>
+
+            <div class="menu-label">Profile</div>
+            <a href="#" class="nav-link"><i class="fas fa-user"></i> My Profile</a>
+            <a href="#" class="nav-link"><i class="fas fa-gear"></i> Settings</a>
+        </div>
+
+        <div class="sync-box">
+            <p style="color: var(--success); font-size: 0.8rem; margin-bottom: 10px; font-weight: 600;">System Synced</p>
+            <form action="{{ route('rbac.generate-seeder') }}" method="POST">
+                @csrf
+                <button type="submit" class="btn btn-success" style="width: 100%; font-size: 0.85rem;">
+                    <i class="fas fa-rotate"></i> Sync Seeder
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <div class="wrapper">
+        <header class="topbar">
+            <div class="search-box">
+                <i class="fas fa-search" style="color: var(--text-muted)"></i>
+                <input type="text" placeholder="Search anything...">
+            </div>
+
+            <div class="profile-section">
+                <div class="profile-info" style="text-align: right">
+                    <div class="profile-name">{{ auth()->user()->name ?? 'Admin User' }}</div>
+                    <div class="profile-role">Super Admin</div>
+                </div>
+                <img src="https://ui-avatars.com/api/?name={{ auth()->user()->name ?? 'Admin' }}&background=4f46e5&color=fff" class="profile-img">
+            </div>
+        </header>
+
+        <main class="main-content">
+            @if(session('success'))
+                <div style="background: #ecfdf5; color: #065f46; padding: 1rem; border-radius: 12px; border: 1px solid #a7f3d0; margin-bottom: 2rem; display: flex; align-items: center; gap: 10px;">
+                    <i class="fas fa-circle-check"></i> {{ session('success') }}
+                </div>
+            @endif
+            @yield('content')
+        </main>
+    </div>
+
+    <script>
+        function toggleDropdown(id) {
+            const el = document.getElementById(id);
+            el.classList.toggle('open');
+        }
+    </script>
+</body>
+</html>

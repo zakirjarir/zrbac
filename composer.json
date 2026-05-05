@@ -1,0 +1,28 @@
+{
+    "name": "zakirjarir/rbac-automator",
+    "description": "An automated RBAC system for Laravel with Module support.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Zakir Jarir",
+            "email": "zakirjarir@gmail.com"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "illuminate/support": "^10.0|^11.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Zakirjarir\\RbacAutomator\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Zakirjarir\\RbacAutomator\\RbacServiceProvider"
+            ]
+        }
+    }
+}

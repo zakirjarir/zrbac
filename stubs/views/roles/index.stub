@@ -1,0 +1,39 @@
+@extends('rbac.layout')
+
+@section('content')
+<div class="card">
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h2>Role Management</h2>
+        <a href="{{ route('rbac.roles.create') }}" class="btn btn-primary">Create New Role</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Slug</th>
+                <th>Permissions</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($roles as $role)
+            <tr>
+                <td>{{ $role->id }}</td>
+                <td>{{ $role->name }}</td>
+                <td><code>{{ $role->slug }}</code></td>
+                <td>
+                    @foreach($role->permissions as $perm)
+                        <span style="background: #e0e7ff; color: #4338ca; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-right: 4px;">{{ $perm->name }}</span>
+                    @endforeach
+                </td>
+                <td>
+                    <button class="btn" style="color: var(--primary);">Edit</button>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+@endsection

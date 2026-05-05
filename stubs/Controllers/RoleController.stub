@@ -1,0 +1,44 @@
+<?php
+
+namespace {{namespace}}Http\Controllers\Rbac;
+
+use {{namespace}}Http\Controllers\Controller;
+use {{namespace}}Models\Role;
+use {{namespace}}Models\Permission;
+use {{namespace}}Models\Module;
+use Illuminate\Http\Request;
+
+class RoleController extends Controller
+{
+    public function index()
+    {
+        $roles = Role::with('permissions')->get();
+        return view('rbac.roles.index', compact('roles'));
+    }
+
+    public function create()
+    {
+        $modules = Module::with('permissions')->get();
+        return view('rbac.roles.create', compact('modules'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|unique:roles,name',
+            'permissions' => 'array'
+        ]);
+
+        $role = Role::create([
+            'name' => $request->name,
+            'slug' => str($request->name)->slug(),
+            'description' => $request->description
+        ]);
+
+        if ($request->permissions) {
+            $role->permissions()->sync($request->permissions);
+        }
+
+        return redirect()->route('rbac.roles.index')->with('success', 'Role created successfully.');
+    }
+}
