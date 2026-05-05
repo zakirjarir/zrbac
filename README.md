@@ -1,5 +1,8 @@
 # Z-RBAC (Automated Scaffolding RBAC for Laravel)
 
+> [!WARNING]
+> **This package is currently under development.** Please use it with caution in production environments. Features and APIs may change.
+
 Z-RBAC is a powerful, scaffolding-style Role-Based Access Control package for Laravel. Unlike traditional packages, Z-RBAC copies all logic (Models, Controllers, Views) into your project, giving you full control over the code.
 
 ## ✨ Features
