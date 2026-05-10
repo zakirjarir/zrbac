@@ -245,6 +245,18 @@ class InstallRbac extends Command
             $updated = true;
         }
 
+        // ── Case 3: RBAC Routes exist but are missing the new Profile routes ──────
+        if (Str::contains($routeContent, 'RBAC Routes') && !Str::contains($routeContent, 'rbac.profile.edit')) {
+             $routeContent = str_replace(
+                "Route::resource('roles', 'RoleController');",
+                "Route::resource('roles', 'RoleController');\n    Route::get('/profile',                        'ProfileController@edit')->name('profile.edit');\n    Route::post('/profile',                       'ProfileController@update')->name('profile.update');",
+                $routeContent
+            );
+            $this->line("   <fg=green>✔  Updated:</> Added missing Profile Management routes to existing RBAC block.");
+            $this->fixed++;
+            $updated = true;
+        }
+
         // ── Append Auth Routes if missing ────────────────────────────────────
         if (!Str::contains($routeContent, 'Authentication Routes')) {
             $authRoutes = <<<'ROUTES'
