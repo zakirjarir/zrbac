@@ -1,68 +1,144 @@
 @extends('rbac.layout')
 
 @section('content')
-<div style="margin-bottom: 2rem;">
-    <h1 style="font-size: 1.8rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">{{ __('Welcome back') }}, {{ auth()->user()->name ?? __('Admin') }}! 👋</h1>
-    <p style="color: var(--text-muted);">{{ __('Manage your system access, roles, and permissions from this control panel.') }}</p>
+<div style="margin-bottom: 2.5rem;">
+    <h1 style="font-size: 2rem; font-weight: 800; color: var(--text-main); margin-bottom: 0.5rem; letter-spacing: -0.02em;">
+        {{ __('Welcome back') }}, <span style="color: var(--primary);">{{ auth()->user()->name ?? __('Admin') }}</span>! 👋
+    </h1>
+    <p style="color: var(--text-muted); font-size: 1.05rem;">{{ __('Here is what is happening with your security system today.') }}</p>
 </div>
 
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-    <!-- Stat Card 1 -->
-    <div class="card" style="margin-bottom: 0; display: flex; align-items: center; gap: 1.5rem;">
-        <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+    <!-- Stat Card: Roles -->
+    <div class="card" style="margin-bottom: 0; padding: 2rem; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -10px; right: -10px; font-size: 5rem; opacity: 0.05; color: var(--primary);">
             <i class="fas fa-user-shield"></i>
         </div>
-        <div>
-            <h3 style="font-size: 2rem; font-weight: 700; line-height: 1;">{{ \{{namespace}}Models\Role::count() ?? 0 }}</h3>
-            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500; margin-top: 4px;">{{ __('Total Roles') }}</p>
+        <div style="display: flex; align-items: center; gap: 1.5rem; position: relative; z-index: 1;">
+            <div style="width: 64px; height: 64px; border-radius: 16px; background: var(--primary-soft); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; box-shadow: 0 8px 16px rgba(var(--primary-rgb), 0.1);">
+                <i class="fas fa-user-shield"></i>
+            </div>
+            <div>
+                <h3 style="font-size: 2.25rem; font-weight: 800; line-height: 1; color: var(--text-main);">{{ \{{namespace}}Models\Role::count() ?? 0 }}</h3>
+                <p style="color: var(--text-muted); font-size: 0.95rem; font-weight: 600; margin-top: 6px; text-transform: uppercase; letter-spacing: 0.05em;">{{ __('System Roles') }}</p>
+            </div>
         </div>
     </div>
 
-    <!-- Stat Card 2 -->
-    <div class="card" style="margin-bottom: 0; display: flex; align-items: center; gap: 1.5rem;">
-        <div style="width: 60px; height: 60px; border-radius: 50%; background: #d1fae5; color: #059669; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
+    <!-- Stat Card: Modules -->
+    <div class="card" style="margin-bottom: 0; padding: 2rem; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -10px; right: -10px; font-size: 5rem; opacity: 0.05; color: var(--success);">
             <i class="fas fa-layer-group"></i>
         </div>
-        <div>
-            <h3 style="font-size: 2rem; font-weight: 700; line-height: 1;">{{ \{{namespace}}Models\Module::count() ?? 0 }}</h3>
-            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500; margin-top: 4px;">{{ __('Active Modules') }}</p>
+        <div style="display: flex; align-items: center; gap: 1.5rem; position: relative; z-index: 1;">
+            <div style="width: 64px; height: 64px; border-radius: 16px; background: var(--success-soft); color: var(--success); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; box-shadow: 0 8px 16px rgba(var(--success-rgb), 0.1);">
+                <i class="fas fa-layer-group"></i>
+            </div>
+            <div>
+                <h3 style="font-size: 2.25rem; font-weight: 800; line-height: 1; color: var(--text-main);">{{ \{{namespace}}Models\Module::count() ?? 0 }}</h3>
+                <p style="color: var(--text-muted); font-size: 0.95rem; font-weight: 600; margin-top: 6px; text-transform: uppercase; letter-spacing: 0.05em;">{{ __('Active Modules') }}</p>
+            </div>
         </div>
     </div>
 
-    <!-- Stat Card 3 -->
-    <div class="card" style="margin-bottom: 0; display: flex; align-items: center; gap: 1.5rem;">
-        <div style="width: 60px; height: 60px; border-radius: 50%; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
+    <!-- Stat Card: Permissions -->
+    <div class="card" style="margin-bottom: 0; padding: 2rem; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -10px; right: -10px; font-size: 5rem; opacity: 0.05; color: var(--warning);">
             <i class="fas fa-key"></i>
         </div>
-        <div>
-            <h3 style="font-size: 2rem; font-weight: 700; line-height: 1;">{{ \{{namespace}}Models\Permission::count() ?? 0 }}</h3>
-            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500; margin-top: 4px;">{{ __('Total Permissions') }}</p>
+        <div style="display: flex; align-items: center; gap: 1.5rem; position: relative; z-index: 1;">
+            <div style="width: 64px; height: 64px; border-radius: 16px; background: var(--warning-soft); color: var(--warning); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; box-shadow: 0 8px 16px rgba(var(--warning-rgb), 0.1);">
+                <i class="fas fa-key"></i>
+            </div>
+            <div>
+                <h3 style="font-size: 2.25rem; font-weight: 800; line-height: 1; color: var(--text-main);">{{ \{{namespace}}Models\Permission::count() ?? 0 }}</h3>
+                <p style="color: var(--text-muted); font-size: 0.95rem; font-weight: 600; margin-top: 6px; text-transform: uppercase; letter-spacing: 0.05em;">{{ __('Permissions') }}</p>
+            </div>
         </div>
     </div>
 
-    <!-- Stat Card 4 -->
-    <div class="card" style="margin-bottom: 0; display: flex; align-items: center; gap: 1.5rem;">
-        <div style="width: 60px; height: 60px; border-radius: 50%; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
+    <!-- Stat Card: Users -->
+    <div class="card" style="margin-bottom: 0; padding: 2rem; position: relative; overflow: hidden;">
+        <div style="position: absolute; top: -10px; right: -10px; font-size: 5rem; opacity: 0.05; color: var(--info);">
             <i class="fas fa-users"></i>
         </div>
-        <div>
-            <h3 style="font-size: 2rem; font-weight: 700; line-height: 1;">{{ \{{namespace}}Models\User::count() ?? 0 }}</h3>
-            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500; margin-top: 4px;">{{ __('Total Users') }}</p>
+        <div style="display: flex; align-items: center; gap: 1.5rem; position: relative; z-index: 1;">
+            <div style="width: 64px; height: 64px; border-radius: 16px; background: var(--info-soft); color: var(--info); display: flex; align-items: center; justify-content: center; font-size: 1.75rem; box-shadow: 0 8px 16px rgba(var(--info-rgb), 0.1);">
+                <i class="fas fa-users"></i>
+            </div>
+            <div>
+                <h3 style="font-size: 2.25rem; font-weight: 800; line-height: 1; color: var(--text-main);">{{ \{{namespace}}Models\User::count() ?? 0 }}</h3>
+                <p style="color: var(--text-muted); font-size: 0.95rem; font-weight: 600; margin-top: 6px; text-transform: uppercase; letter-spacing: 0.05em;">{{ __('System Users') }}</p>
+            </div>
         </div>
     </div>
 </div>
 
-<div class="card">
-    <div class="card-header">
-        <div class="card-title">{{ __('Quick Actions') }}</div>
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 1.5rem;">
+    <!-- Recent Activity or Quick Actions -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">{{ __('Quick Actions') }}</div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <a href="{{ route('rbac.roles.create') }}" class="btn btn-primary" style="justify-content: flex-start; padding: 1.5rem;">
+                <div style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-plus"></i>
+                </div>
+                <span>{{ __('Create New Role') }}</span>
+            </a>
+            <a href="{{ route('rbac.modules.index') }}" class="btn btn-outline" style="justify-content: flex-start; padding: 1.5rem;">
+                <div style="width: 40px; height: 40px; background: var(--primary-soft); color: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-cog"></i>
+                </div>
+                <span>{{ __('Manage Modules') }}</span>
+            </a>
+            <a href="{{ route('rbac.users.index') }}" class="btn btn-outline" style="justify-content: flex-start; padding: 1.5rem;">
+                <div style="width: 40px; height: 40px; background: var(--success-soft); color: var(--success); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+                <span>{{ __('Assign Permissions') }}</span>
+            </a>
+            <a href="{{ route('rbac.ui-demo') }}" class="btn btn-outline" style="justify-content: flex-start; padding: 1.5rem;">
+                <div style="width: 40px; height: 40px; background: var(--warning-soft); color: var(--warning); border-radius: 10px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-paint-brush"></i>
+                </div>
+                <span>{{ __('View Components') }}</span>
+            </a>
+        </div>
     </div>
-    <div style="display: flex; gap: 1rem;">
-        <a href="{{ route('rbac.roles.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> {{ __('Create New Role') }}
-        </a>
-        <a href="{{ route('rbac.modules.index') }}" class="btn btn-outline">
-            <i class="fas fa-cog"></i> {{ __('Manage Modules') }}
-        </a>
+
+    <!-- System Status -->
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">{{ __('System Integrity') }}</div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 500;">{{ __('Database Sync') }}</span>
+                <span class="badge badge-success">{{ __('Healthy') }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 500;">{{ __('Active Languages') }}</span>
+                <span class="badge badge-primary">{{ \{{namespace}}Models\Language::where('status', true)->count() }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-weight: 500;">{{ __('Middleware Status') }}</span>
+                <span class="badge badge-success">{{ __('Active') }}</span>
+            </div>
+            
+            <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid var(--border-light);">
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem;">
+                    {{ __('Ensure your seeder is up to date after making changes to roles or modules.') }}
+                </p>
+                <form action="{{ route('rbac.generate-seeder') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        <i class="fas fa-sync"></i> {{ __('Sync Database to Seeder') }}
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
