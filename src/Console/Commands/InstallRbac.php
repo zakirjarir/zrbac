@@ -208,27 +208,23 @@ class InstallRbac extends Command
     {
         $routeFile    = base_path('routes/web.php');
         $routeContent = File::get($routeFile);
+        $updated = false;
 
         // ── Case 1: Routes exist but were written with 'auth' (old bug) ──────
-        if (Str::contains($routeContent, 'RBAC Routes')) {
-            if (Str::contains($routeContent, "'middleware' => ['web', 'auth']")) {
-                $fixed = str_replace(
-                    "'middleware' => ['web', 'auth']",
-                    "'middleware' => ['web']",
-                    $routeContent
-                );
-                File::put($routeFile, $fixed);
-                $this->line("   <fg=green>✔  Fixed:</> Removed 'auth' from RBAC route middleware in routes/web.php");
-                $this->fixed++;
-            } else {
-                $this->line("   <fg=yellow>⊙  Skipped:</> RBAC routes already present in routes/web.php");
-                $this->skipped++;
-            }
-            return;
+        if (Str::contains($routeContent, "'middleware' => ['web', 'auth']") && Str::contains($routeContent, 'RBAC Routes')) {
+            $routeContent = str_replace(
+                "'middleware' => ['web', 'auth']",
+                "'middleware' => ['web']",
+                $routeContent
+            );
+            $this->line("   <fg=green>✔  Fixed:</> Removed 'auth' from RBAC route middleware in routes/web.php");
+            $this->fixed++;
+            $updated = true;
         }
 
-        // ── Case 2: Routes not present yet — append them ─────────────────────
-        $routes = <<<'ROUTES'
+        // ── Append Auth Routes if missing ────────────────────────────────────
+        if (!Str::contains($routeContent, 'Authentication Routes')) {
+            $authRoutes = <<<'ROUTES'
 
 
 // ============================================================
@@ -243,6 +239,20 @@ Route::get('password/reset', 'App\Http\Controllers\Auth\PasswordResetController@
 Route::post('password/email', 'App\Http\Controllers\Auth\PasswordResetController@sendResetLinkEmail')->name('password.email');
 Route::get('password/reset/{token}', 'App\Http\Controllers\Auth\PasswordResetController@showResetForm')->name('password.reset');
 Route::post('password/reset', 'App\Http\Controllers\Auth\PasswordResetController@reset')->name('password.update');
+ROUTES;
+            $routeContent .= $authRoutes;
+            $this->line("   <fg=green>✔  Updated:</> Added Auth routes to routes/web.php");
+            $this->created++;
+            $updated = true;
+        } else {
+            $this->line("   <fg=yellow>⊙  Skipped:</> Auth routes already present");
+            $this->skipped++;
+        }
+
+        // ── Append RBAC Routes if missing ────────────────────────────────────
+        if (!Str::contains($routeContent, 'RBAC Routes')) {
+            $rbacRoutes = <<<'ROUTES'
+
 
 // ============================================================
 // RBAC Routes  (added by zakirjarir/rbac-automator)
@@ -265,10 +275,18 @@ Route::group([
     Route::post('/generate-seeder',               'ModuleController@generateSeeder')->name('generate-seeder');
 });
 ROUTES;
+            $routeContent .= $rbacRoutes;
+            $this->line("   <fg=green>✔  Updated:</> Added RBAC routes to routes/web.php");
+            $this->created++;
+            $updated = true;
+        } else {
+            $this->line("   <fg=yellow>⊙  Skipped:</> RBAC routes already present");
+            $this->skipped++;
+        }
 
-        File::append($routeFile, $routes);
-        $this->line("   <fg=green>✔  Updated:</> routes/web.php");
-        $this->created++;
+        if ($updated) {
+            File::put($routeFile, $routeContent);
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
