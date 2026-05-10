@@ -98,6 +98,35 @@ class ModuleController extends Controller
         return back()->with('success', 'Module created and Blade file generated successfully.');
     }
 
+    public function update(Request $request, Module $module)
+    {
+        $request->validate([
+            'name' => ['required', Rule::unique('modules', 'name')->ignore($module->id)],
+        ]);
+
+        $oldSlug = $module->slug;
+        $newSlug = str($request->name)->slug();
+
+        $module->update([
+            'name' => $request->name,
+            'slug' => $newSlug,
+            'icon' => $request->icon,
+            'parent_id' => $request->parent_id,
+            'status' => $request->status ?? true
+        ]);
+
+        // If slug changed, rename the blade file
+        if ($oldSlug !== $newSlug) {
+            $oldPath = resource_path("views/{$oldSlug}.blade.php");
+            $newPath = resource_path("views/{$newSlug}.blade.php");
+            if (File::exists($oldPath)) {
+                File::move($oldPath, $newPath);
+            }
+        }
+
+        return back()->with('success', 'Module updated successfully.');
+    }
+
     public function addPermission(Request $request, Module $module)
     {
         $request->validate([
