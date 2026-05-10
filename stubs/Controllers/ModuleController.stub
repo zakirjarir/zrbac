@@ -27,10 +27,11 @@ class ModuleController extends Controller
 
         // Export Modules and Permissions
         foreach ($modules as $module) {
+            $status = $module->status ? 'true' : 'false';
             $seederContent .= "        \$module = Module::updateOrCreate(['slug' => '{$module->slug}'], [\n";
             $seederContent .= "            'name' => '{$module->name}',\n";
             $seederContent .= "            'icon' => '{$module->icon}',\n";
-            $seederContent .= "            'status' => " . ($module->status ? 'true' : 'false') . ",\n";
+            $seederContent .= "            'status' => {$status},\n";
             $seederContent .= "        ]);\n\n";
 
             foreach ($module->permissions as $permission) {
