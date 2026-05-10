@@ -269,6 +269,18 @@ class InstallRbac extends Command
             $updated = true;
         }
 
+        // ── Case 5: RBAC Routes exist but are missing the new Module Update route ──────
+        if (Str::contains($routeContent, 'RBAC Routes') && !Str::contains($routeContent, 'rbac.modules.update')) {
+             $routeContent = str_replace(
+                "Route::resource('roles', 'RoleController');",
+                "Route::resource('roles', 'RoleController');\n    Route::put('/modules/{module}',               'ModuleController@update')->name('modules.update');",
+                $routeContent
+            );
+            $this->line("   <fg=green>✔  Updated:</> Added missing Module Update route to existing RBAC block.");
+            $this->fixed++;
+            $updated = true;
+        }
+
         // ── Append Auth Routes if missing ────────────────────────────────────
         if (!Str::contains($routeContent, 'Authentication Routes')) {
             $authRoutes = <<<'ROUTES'
@@ -321,6 +333,7 @@ Route::group([
     Route::get('/m/{slug}',                       'ModuleController@showModule')->name('module.page');
     Route::get('/modules',                        'ModuleController@index')->name('modules.index');
     Route::post('/modules',                       'ModuleController@store')->name('modules.store');
+    Route::put('/modules/{module}',               'ModuleController@update')->name('modules.update');
     Route::delete('/modules/{module}',            'ModuleController@destroy')->name('modules.destroy');
     Route::post('/modules/{module}/permissions',  'ModuleController@addPermission')->name('modules.permissions.store');
     Route::delete('/permissions/{permission}',    'ModuleController@destroyPermission')->name('permissions.destroy');
