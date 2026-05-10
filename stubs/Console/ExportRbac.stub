@@ -20,7 +20,7 @@ class ExportRbac extends Command
         $modules = Module::with('permissions')->get();
         $roles = Role::with('permissions')->get();
 
-        $seederContent = "<?php\n\nnamespace Database\Seeders;\n\nuse Illuminate\Database\Seeder;\nuse {{namespace}}Models\Module;\nuse {{namespace}}Models\Role;\nuse {{namespace}}Models\Permission;\n\nclass RbacSeeder extends Seeder\n{\n    public function run()\n    {\n";
+        $seederContent = "<?php\n\nnamespace Database\Seeders;\n\nuse Illuminate\Database\Seeder;\nuse {{root_namespace}}\\Models\Module;\nuse {{root_namespace}}\\Models\Role;\nuse {{root_namespace}}\\Models\Permission;\n\nclass RbacSeeder extends Seeder\n{\n    public function run()\n    {\n";
 
         // Export Modules and Permissions
         foreach ($modules as $module) {

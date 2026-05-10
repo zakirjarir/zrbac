@@ -32,53 +32,58 @@ class InstallRbac extends Command
         }
 
         $namespace = $this->getAppNamespace();
+        $rootNamespace = rtrim($namespace, '\\');
+        $replacements = [
+            'namespace' => $namespace,
+            'root_namespace' => $rootNamespace,
+        ];
 
         // ── 1. Models ────────────────────────────────────────────────────────
         $this->section('Models');
         $this->ensureDirectoryExists(app_path('Models'));
-        $this->publishStub('Models/Module.stub',     app_path('Models/Module.php'),     ['namespace' => $namespace]);
-        $this->publishStub('Models/Role.stub',       app_path('Models/Role.php'),       ['namespace' => $namespace]);
-        $this->publishStub('Models/Permission.stub', app_path('Models/Permission.php'), ['namespace' => $namespace]);
+        $this->publishStub('Models/Module.stub',     app_path('Models/Module.php'),     $replacements);
+        $this->publishStub('Models/Role.stub',       app_path('Models/Role.php'),       $replacements);
+        $this->publishStub('Models/Permission.stub', app_path('Models/Permission.php'), $replacements);
 
         // ── 2. Middleware ─────────────────────────────────────────────────────
         $this->section('Middleware');
         $this->ensureDirectoryExists(app_path('Http/Middleware'));
-        $this->publishStub('Middleware/CheckPermission.stub', app_path('Http/Middleware/CheckPermission.php'), ['namespace' => $namespace]);
+        $this->publishStub('Middleware/CheckPermission.stub', app_path('Http/Middleware/CheckPermission.php'), $replacements);
 
         // ── 3. Traits ─────────────────────────────────────────────────────────
         $this->section('Traits');
         $this->ensureDirectoryExists(app_path('Traits'));
-        $this->publishStub('Traits/HasRbac.stub', app_path('Traits/HasRbac.php'), ['namespace' => $namespace]);
+        $this->publishStub('Traits/HasRbac.stub', app_path('Traits/HasRbac.php'), $replacements);
 
         // ── 4. Controllers ────────────────────────────────────────────────────
         $this->section('Controllers');
         $this->ensureDirectoryExists(app_path('Http/Controllers/Rbac'));
-        $this->publishStub('Controllers/RoleController.stub',   app_path('Http/Controllers/Rbac/RoleController.php'),   ['namespace' => $namespace]);
-        $this->publishStub('Controllers/ModuleController.stub', app_path('Http/Controllers/Rbac/ModuleController.php'), ['namespace' => $namespace]);
+        $this->publishStub('Controllers/RoleController.stub',   app_path('Http/Controllers/Rbac/RoleController.php'),   $replacements);
+        $this->publishStub('Controllers/ModuleController.stub', app_path('Http/Controllers/Rbac/ModuleController.php'), $replacements);
 
         // ── 4.5. Auth Scaffolding ─────────────────────────────────────────────
         $this->section('Auth Scaffolding');
         $this->ensureDirectoryExists(app_path('Http/Controllers/Auth'));
-        $this->publishStub('Controllers/Auth/AuthController.stub', app_path('Http/Controllers/Auth/AuthController.php'), ['namespace' => $namespace]);
-        $this->publishStub('Controllers/Auth/PasswordResetController.stub', app_path('Http/Controllers/Auth/PasswordResetController.php'), ['namespace' => $namespace]);
+        $this->publishStub('Controllers/Auth/AuthController.stub', app_path('Http/Controllers/Auth/AuthController.php'), $replacements);
+        $this->publishStub('Controllers/Auth/PasswordResetController.stub', app_path('Http/Controllers/Auth/PasswordResetController.php'), $replacements);
         
         $this->ensureDirectoryExists(resource_path('views/auth/passwords'));
-        $this->publishStub('views/auth/layout.stub', resource_path('views/auth/layout.blade.php'));
-        $this->publishStub('views/auth/login.stub', resource_path('views/auth/login.blade.php'));
-        $this->publishStub('views/auth/register.stub', resource_path('views/auth/register.blade.php'));
-        $this->publishStub('views/auth/passwords/email.stub', resource_path('views/auth/passwords/email.blade.php'));
-        $this->publishStub('views/auth/passwords/reset.stub', resource_path('views/auth/passwords/reset.blade.php'));
+        $this->publishStub('views/auth/layout.stub', resource_path('views/auth/layout.blade.php'), $replacements);
+        $this->publishStub('views/auth/login.stub', resource_path('views/auth/login.blade.php'), $replacements);
+        $this->publishStub('views/auth/register.stub', resource_path('views/auth/register.blade.php'), $replacements);
+        $this->publishStub('views/auth/passwords/email.stub', resource_path('views/auth/passwords/email.blade.php'), $replacements);
+        $this->publishStub('views/auth/passwords/reset.stub', resource_path('views/auth/passwords/reset.blade.php'), $replacements);
 
         // ── 5. Views ──────────────────────────────────────────────────────────
         $this->section('Views');
         $this->ensureDirectoryExists(resource_path('views/rbac/roles'));
         $this->ensureDirectoryExists(resource_path('views/rbac/modules'));
-        $this->publishStub('views/layout.stub',        resource_path('views/rbac/layout.blade.php'));
-        $this->publishStub('views/dashboard.stub',     resource_path('views/rbac/dashboard.blade.php'), ['namespace' => $namespace]);
-        $this->publishStub('views/roles/index.stub',   resource_path('views/rbac/roles/index.blade.php'));
-        $this->publishStub('views/roles/create.stub',  resource_path('views/rbac/roles/create.blade.php'));
-        $this->publishStub('views/roles/edit.stub',    resource_path('views/rbac/roles/edit.blade.php'));
-        $this->publishStub('views/modules/index.stub', resource_path('views/rbac/modules/index.blade.php'));
+        $this->publishStub('views/layout.stub',        resource_path('views/rbac/layout.blade.php'), $replacements);
+        $this->publishStub('views/dashboard.stub',     resource_path('views/rbac/dashboard.blade.php'), $replacements);
+        $this->publishStub('views/roles/index.stub',   resource_path('views/rbac/roles/index.blade.php'), $replacements);
+        $this->publishStub('views/roles/create.stub',  resource_path('views/rbac/roles/create.blade.php'), $replacements);
+        $this->publishStub('views/roles/edit.stub',    resource_path('views/rbac/roles/edit.blade.php'), $replacements);
+        $this->publishStub('views/modules/index.stub', resource_path('views/rbac/modules/index.blade.php'), $replacements);
 
         // ── 6. Migration ──────────────────────────────────────────────────────
         $this->section('Migration');
