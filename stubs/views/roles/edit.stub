@@ -1,0 +1,70 @@
+@extends('rbac.layout')
+
+@section('content')
+<div class="card" style="max-width: 900px; margin: 0 auto;">
+    <div class="card-header">
+        <div class="card-title">
+            <a href="{{ route('rbac.roles.index') }}" style="color: var(--text-muted); margin-right: 10px; text-decoration: none;">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+            Edit Role: {{ $role->name }}
+        </div>
+    </div>
+
+    <form action="{{ route('rbac.roles.update', $role->id) }}" method="POST">
+        @csrf
+        @method('PUT')
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+            <div class="form-group">
+                <label class="form-label">Role Name <span style="color: var(--danger);">*</span></label>
+                <input type="text" name="name" class="form-control" placeholder="e.g., Editor, Manager" required value="{{ old('name', $role->name) }}">
+                @error('name') <span style="color: var(--danger); font-size: 0.8rem; margin-top: 4px; display: block;">{{ $message }}</span> @enderror
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Description (Optional)</label>
+                <input type="text" name="description" class="form-control" placeholder="Short description of this role" value="{{ old('description', $role->description) }}">
+            </div>
+        </div>
+
+        <div style="margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border-light);">
+            <h3 style="font-size: 1.1rem; font-weight: 600;">Assign Permissions</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">Select the permissions you want to grant to this role.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+            @php $rolePermissions = $role->permissions->pluck('id')->toArray(); @endphp
+            
+            @foreach($modules as $module)
+                <div style="background: var(--background); border: 1px solid var(--border-light); border-radius: var(--radius-md); padding: 1.2rem;">
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border);">
+                        <i class="{{ $module->icon ?? 'fas fa-box' }}" style="color: var(--primary);"></i>
+                        <h4 style="font-weight: 600; font-size: 1rem; margin: 0;">{{ $module->name }}</h4>
+                    </div>
+                    
+                    <div style="display: flex; flex-direction: column; gap: 0.8rem;">
+                        @forelse($module->permissions as $perm)
+                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                                <input type="checkbox" name="permissions[]" value="{{ $perm->id }}" 
+                                    {{ in_array($perm->id, $rolePermissions) ? 'checked' : '' }}
+                                    style="width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer;">
+                                <span style="font-size: 0.9rem;">{{ $perm->name }}</span>
+                            </label>
+                        @empty
+                            <p style="color: var(--text-muted); font-size: 0.85rem; font-style: italic;">No permissions in this module.</p>
+                        @endforelse
+                    </div>
+                </div>
+            @endforeach
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 1rem; border-top: 1px solid var(--border-light); padding-top: 1.5rem;">
+            <a href="{{ route('rbac.roles.index') }}" class="btn btn-outline">Cancel</a>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Update Role
+            </button>
+        </div>
+    </form>
+</div>
+@endsection

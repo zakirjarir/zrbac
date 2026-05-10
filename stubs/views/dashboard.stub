@@ -1,0 +1,57 @@
+@extends('rbac.layout')
+
+@section('content')
+<div style="margin-bottom: 2rem;">
+    <h1 style="font-size: 1.8rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">Welcome back, {{ auth()->user()->name ?? 'Admin' }}! 👋</h1>
+    <p style="color: var(--text-muted);">Manage your system access, roles, and permissions from this control panel.</p>
+</div>
+
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <!-- Stat Card 1 -->
+    <div class="card" style="margin-bottom: 0; display: flex; align-items: center; gap: 1.5rem;">
+        <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
+            <i class="fas fa-user-shield"></i>
+        </div>
+        <div>
+            <h3 style="font-size: 2rem; font-weight: 700; line-height: 1;">{{ \{{namespace}}Models\Role::count() ?? 0 }}</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500; margin-top: 4px;">Total Roles</p>
+        </div>
+    </div>
+
+    <!-- Stat Card 2 -->
+    <div class="card" style="margin-bottom: 0; display: flex; align-items: center; gap: 1.5rem;">
+        <div style="width: 60px; height: 60px; border-radius: 50%; background: #d1fae5; color: #059669; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
+            <i class="fas fa-layer-group"></i>
+        </div>
+        <div>
+            <h3 style="font-size: 2rem; font-weight: 700; line-height: 1;">{{ \{{namespace}}Models\Module::count() ?? 0 }}</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500; margin-top: 4px;">Active Modules</p>
+        </div>
+    </div>
+
+    <!-- Stat Card 3 -->
+    <div class="card" style="margin-bottom: 0; display: flex; align-items: center; gap: 1.5rem;">
+        <div style="width: 60px; height: 60px; border-radius: 50%; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 1.8rem;">
+            <i class="fas fa-key"></i>
+        </div>
+        <div>
+            <h3 style="font-size: 2rem; font-weight: 700; line-height: 1;">{{ \{{namespace}}Models\Permission::count() ?? 0 }}</h3>
+            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500; margin-top: 4px;">Total Permissions</p>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">Quick Actions</div>
+    </div>
+    <div style="display: flex; gap: 1rem;">
+        <a href="{{ route('rbac.roles.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create New Role
+        </a>
+        <a href="{{ route('rbac.modules.index') }}" class="btn btn-outline">
+            <i class="fas fa-cog"></i> Manage Modules
+        </a>
+    </div>
+</div>
+@endsection

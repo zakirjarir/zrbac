@@ -2,38 +2,73 @@
 
 @section('content')
 <div class="card">
-    <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h2>Role Management</h2>
-        <a href="{{ route('rbac.roles.create') }}" class="btn btn-primary">Create New Role</a>
+    <div class="card-header">
+        <div class="card-title">Role Management</div>
+        <a href="{{ route('rbac.roles.create') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create New Role
+        </a>
     </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Name</th>
-                <th>Slug</th>
-                <th>Permissions</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($roles as $role)
-            <tr>
-                <td>{{ $role->id }}</td>
-                <td>{{ $role->name }}</td>
-                <td><code>{{ $role->slug }}</code></td>
-                <td>
-                    @foreach($role->permissions as $perm)
-                        <span style="background: #e0e7ff; color: #4338ca; padding: 2px 8px; border-radius: 4px; font-size: 12px; margin-right: 4px;">{{ $perm->name }}</span>
-                    @endforeach
-                </td>
-                <td>
-                    <button class="btn" style="color: var(--primary);">Edit</button>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="width: 50px;">ID</th>
+                    <th>Role Details</th>
+                    <th>Permissions Granted</th>
+                    <th style="width: 150px; text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($roles as $role)
+                <tr>
+                    <td><span class="badge badge-primary">#{{ $role->id }}</span></td>
+                    <td>
+                        <div style="font-weight: 600; color: var(--text-main); font-size: 1rem;">{{ $role->name }}</div>
+                        <div style="color: var(--text-muted); font-size: 0.8rem; margin-top: 4px; font-family: monospace; background: var(--border-light); padding: 2px 6px; border-radius: 4px; display: inline-block;">{{ $role->slug }}</div>
+                    </td>
+                    <td>
+                        <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                            @forelse($role->permissions->take(8) as $perm)
+                                <span class="badge" style="background: var(--border-light); color: var(--text-main); border: 1px solid var(--border);">
+                                    {{ $perm->name }}
+                                </span>
+                            @empty
+                                <span style="color: var(--text-muted); font-size: 0.85rem; font-style: italic;">No permissions assigned</span>
+                            @endforelse
+                            
+                            @if($role->permissions->count() > 8)
+                                <span class="badge badge-primary">+{{ $role->permissions->count() - 8 }} more</span>
+                            @endif
+                        </div>
+                    </td>
+                    <td style="text-align: center;">
+                        <div style="display: flex; gap: 8px; justify-content: center;">
+                            <a href="{{ route('rbac.roles.edit', $role->id) }}" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" title="Edit Role">
+                                <i class="fas fa-pen"></i>
+                            </a>
+                            <form action="{{ route('rbac.roles.destroy', $role->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this role?');" style="display: inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" title="Delete Role">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 3rem 1rem;">
+                        <div style="color: var(--text-muted); font-size: 3rem; margin-bottom: 1rem;"><i class="fas fa-folder-open"></i></div>
+                        <h3 style="color: var(--text-main); margin-bottom: 0.5rem;">No roles found</h3>
+                        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">You haven't created any roles yet.</p>
+                        <a href="{{ route('rbac.roles.create') }}" class="btn btn-primary">Create Your First Role</a>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
 </div>
 @endsection

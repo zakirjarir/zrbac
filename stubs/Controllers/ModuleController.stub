@@ -77,4 +77,16 @@ class ModuleController extends Controller
         $module->permissions()->create(['name' => $request->name, 'slug' => str($request->name)->slug()]);
         return back()->with('success', 'Permission added.');
     }
+
+    public function destroy(Module $module)
+    {
+        $module->delete();
+        return back()->with('success', 'Module deleted successfully.');
+    }
+
+    public function destroyPermission(Permission $permission)
+    {
+        $permission->delete();
+        return back()->with('success', 'Permission deleted successfully.');
+    }
 }

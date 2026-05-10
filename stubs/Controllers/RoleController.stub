@@ -41,4 +41,38 @@ class RoleController extends Controller
 
         return redirect()->route('rbac.roles.index')->with('success', 'Role created successfully.');
     }
+
+    public function edit(Role $role)
+    {
+        $modules = Module::with('permissions')->get();
+        return view('rbac.roles.edit', compact('role', 'modules'));
+    }
+
+    public function update(Request $request, Role $role)
+    {
+        $request->validate([
+            'name' => 'required|unique:roles,name,' . $role->id,
+            'permissions' => 'array'
+        ]);
+
+        $role->update([
+            'name' => $request->name,
+            'slug' => str($request->name)->slug(),
+            'description' => $request->description
+        ]);
+
+        if ($request->has('permissions')) {
+            $role->permissions()->sync($request->permissions);
+        } else {
+            $role->permissions()->detach();
+        }
+
+        return redirect()->route('rbac.roles.index')->with('success', 'Role updated successfully.');
+    }
+
+    public function destroy(Role $role)
+    {
+        $role->delete();
+        return redirect()->route('rbac.roles.index')->with('success', 'Role deleted successfully.');
+    }
 }

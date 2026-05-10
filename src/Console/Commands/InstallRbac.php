@@ -60,8 +60,12 @@ class InstallRbac extends Command
         $this->section('Views');
         $this->ensureDirectoryExists(resource_path('views/rbac/roles'));
         $this->ensureDirectoryExists(resource_path('views/rbac/modules'));
-        $this->publishStub('views/layout.stub',      resource_path('views/rbac/layout.blade.php'));
-        $this->publishStub('views/roles/index.stub', resource_path('views/rbac/roles/index.blade.php'));
+        $this->publishStub('views/layout.stub',        resource_path('views/rbac/layout.blade.php'));
+        $this->publishStub('views/dashboard.stub',     resource_path('views/rbac/dashboard.blade.php'));
+        $this->publishStub('views/roles/index.stub',   resource_path('views/rbac/roles/index.blade.php'));
+        $this->publishStub('views/roles/create.stub',  resource_path('views/rbac/roles/create.blade.php'));
+        $this->publishStub('views/roles/edit.stub',    resource_path('views/rbac/roles/edit.blade.php'));
+        $this->publishStub('views/modules/index.stub', resource_path('views/rbac/modules/index.blade.php'));
 
         // ── 6. Migration ──────────────────────────────────────────────────────
         $this->section('Migration');
@@ -221,11 +225,13 @@ Route::group([
     'namespace'  => 'App\Http\Controllers\Rbac',
     'middleware' => ['web'],
 ], function () {
-    Route::get('/dashboard', function () { return view('rbac.layout'); })->name('dashboard');
+    Route::get('/dashboard', function () { return view('rbac.dashboard'); })->name('dashboard');
     Route::resource('roles', 'RoleController');
     Route::get('/modules',                        'ModuleController@index')->name('modules.index');
     Route::post('/modules',                       'ModuleController@store')->name('modules.store');
+    Route::delete('/modules/{module}',            'ModuleController@destroy')->name('modules.destroy');
     Route::post('/modules/{module}/permissions',  'ModuleController@addPermission')->name('modules.permissions.store');
+    Route::delete('/permissions/{permission}',    'ModuleController@destroyPermission')->name('permissions.destroy');
     Route::post('/generate-seeder',               'ModuleController@generateSeeder')->name('generate-seeder');
 });
 ROUTES;
