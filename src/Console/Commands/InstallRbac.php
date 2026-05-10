@@ -385,8 +385,9 @@ ROUTES;
         $routeContent = File::get($routeFile);
         $this->appendRoutes();
 
-        // 2. Fix Database Index (if applicable)
+        // 2. Fix Database Index & Columns (if applicable)
         try {
+            // Fix permissions unique index
             $indexes = \Illuminate\Support\Facades\DB::select("SHOW INDEX FROM permissions");
             $hasOldIndex = collect($indexes)->contains(fn($i) => ($i->Key_name ?? $i->key_name) === 'permissions_slug_unique');
 
@@ -394,11 +395,24 @@ ROUTES;
                 $this->warn('   ⚠  Outdated unique index detected in permissions table. Fixing...');
                 \Illuminate\Support\Facades\DB::statement('ALTER TABLE permissions DROP INDEX permissions_slug_unique');
                 \Illuminate\Support\Facades\DB::statement('ALTER TABLE permissions ADD UNIQUE permissions_module_id_slug_unique (module_id, slug)');
-                $this->line("   <fg=green>✔  Fixed:</> Database index updated to allow duplicate permission names across modules.");
+                $this->line("   <fg=green>✔  Fixed:</> Database index updated.");
                 $this->fixed++;
             }
+
+            // Fix modules parent_id column
+            $columns = \Illuminate\Support\Facades\DB::select("SHOW COLUMNS FROM modules");
+            $hasParentId = collect($columns)->contains(fn($c) => ($c->Field ?? $c->field) === 'parent_id');
+
+            if (!$hasParentId) {
+                $this->warn('   ⚠  Missing parent_id column in modules table. Adding...');
+                \Illuminate\Support\Facades\DB::statement('ALTER TABLE modules ADD COLUMN parent_id BIGINT UNSIGNED NULL AFTER slug');
+                \Illuminate\Support\Facades\DB::statement('ALTER TABLE modules ADD CONSTRAINT modules_parent_id_foreign FOREIGN KEY (parent_id) REFERENCES modules(id) ON DELETE CASCADE');
+                $this->line("   <fg=green>✔  Fixed:</> parent_id column added to modules table.");
+                $this->fixed++;
+            }
+
         } catch (\Throwable $e) {
-            $this->line("   <fg=gray>⊙  Skipped:</> Database index check (could not access database or table doesn't exist yet).");
+            $this->line("   <fg=gray>⊙  Skipped:</> Database check (could not access database or table doesn't exist yet).");
         }
 
         $this->info('');
