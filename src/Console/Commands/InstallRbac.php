@@ -74,7 +74,7 @@ class InstallRbac extends Command
         $this->ensureDirectoryExists(resource_path('views/rbac/roles'));
         $this->ensureDirectoryExists(resource_path('views/rbac/modules'));
         $this->publishStub('views/layout.stub',        resource_path('views/rbac/layout.blade.php'));
-        $this->publishStub('views/dashboard.stub',     resource_path('views/rbac/dashboard.blade.php'));
+        $this->publishStub('views/dashboard.stub',     resource_path('views/rbac/dashboard.blade.php'), ['namespace' => $namespace]);
         $this->publishStub('views/roles/index.stub',   resource_path('views/rbac/roles/index.blade.php'));
         $this->publishStub('views/roles/create.stub',  resource_path('views/rbac/roles/create.blade.php'));
         $this->publishStub('views/roles/edit.stub',    resource_path('views/rbac/roles/edit.blade.php'));
