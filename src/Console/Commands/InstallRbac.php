@@ -455,20 +455,45 @@ ROUTES;
                 $this->fixed++;
             }
 
-            // Fix modules parent_id column
+            // Fix modules columns
             $columns = \Illuminate\Support\Facades\DB::select("SHOW COLUMNS FROM modules");
             $hasParentId = collect($columns)->contains(fn($c) => ($c->Field ?? $c->field) === 'parent_id');
+            $hasStatus = collect($columns)->contains(fn($c) => ($c->Field ?? $c->field) === 'status');
 
             if (!$hasParentId) {
                 $this->warn('   ⚠  Missing parent_id column in modules table. Adding...');
                 \Illuminate\Support\Facades\DB::statement('ALTER TABLE modules ADD COLUMN parent_id BIGINT UNSIGNED NULL AFTER slug');
                 \Illuminate\Support\Facades\DB::statement('ALTER TABLE modules ADD CONSTRAINT modules_parent_id_foreign FOREIGN KEY (parent_id) REFERENCES modules(id) ON DELETE CASCADE');
-                $this->line("   <fg=green>✔  Fixed:</> parent_id column added to modules table.");
+                $this->line("   <fg=green>✔  Fixed:</> parent_id column added.");
+                $this->fixed++;
+            }
+
+            if (!$hasStatus) {
+                $this->warn('   ⚠  Missing status column in modules table. Adding...');
+                \Illuminate\Support\Facades\DB::statement('ALTER TABLE modules ADD COLUMN status TINYINT(1) DEFAULT 1 AFTER parent_id');
+                $this->line("   <fg=green>✔  Fixed:</> status column added.");
+                $this->fixed++;
+            }
+
+            // Check for languages table
+            $hasLanguagesTable = \Illuminate\Support\Facades\Schema::hasTable('languages');
+            if (!$hasLanguagesTable) {
+                $this->warn('   ⚠  Missing languages table. Creating...');
+                \Illuminate\Support\Facades\Schema::create('languages', function ($table) {
+                    $table->id();
+                    $table->string('name');
+                    $table->string('code')->unique();
+                    $table->string('flag')->nullable();
+                    $table->boolean('is_default')->default(false);
+                    $table->boolean('status')->default(true);
+                    $table->timestamps();
+                });
+                $this->line("   <fg=green>✔  Fixed:</> languages table created.");
                 $this->fixed++;
             }
 
         } catch (\Throwable $e) {
-            $this->line("   <fg=gray>⊙  Skipped:</> Database check (could not access database or table doesn't exist yet).");
+            $this->line("   <fg=gray>⊙  Skipped:</> Database check ({$e->getMessage()})");
         }
 
         $this->info('');
