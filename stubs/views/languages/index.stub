@@ -88,7 +88,7 @@
         <div>
             <h4 style="color: var(--info); font-weight: 800; font-size: 1.1rem; margin-bottom: 4px;">{{ __('How Translations Work') }}</h4>
             <p style="color: var(--text-main); font-size: 0.95rem; opacity: 0.8;">
-                {{ __('When you add a new language, a corresponding JSON file is created in your `lang/` directory. You can then translate all keys wrapped in `{{ __("...") }}` to provide a fully localized experience.') }}
+                {{ __('When you add a new language, a corresponding JSON file is created in your `lang/` directory. You can then translate all keys wrapped in `__("...")` to provide a fully localized experience.') }}
             </p>
         </div>
     </div>
