@@ -311,6 +311,18 @@ class InstallRbac extends Command
             $updated = true;
         }
 
+        // ── Case 8: RBAC Routes exist but are missing the Language Management route ──────
+        if (Str::contains($routeContent, 'RBAC Routes') && !Str::contains($routeContent, 'rbac.languages.index')) {
+             $routeContent = str_replace(
+                "Route::resource('roles', 'RoleController');",
+                "Route::resource('languages',                  'LanguageController');\n    Route::resource('roles', 'RoleController');",
+                $routeContent
+            );
+            $this->line("   <fg=green>✔  Updated:</> Added missing Language Management routes to existing RBAC block.");
+            $this->fixed++;
+            $updated = true;
+        }
+
         // ── Append Auth Routes if missing ────────────────────────────────────
         if (!Str::contains($routeContent, 'Authentication Routes')) {
             $authRoutes = <<<'ROUTES'
