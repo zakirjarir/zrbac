@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title', 'Authentication')</title>
+    <!-- Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            /* Color Palette */
+            --primary: #4338ca;
+            --primary-hover: #3730a3;
+            --primary-light: #e0e7ff;
+            --background: #f8fafc;
+            --surface: #ffffff;
+            
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            
+            --border: #e2e8f0;
+            --border-light: #f1f5f9;
+            --danger: #ef4444;
+            
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius-lg: 1rem;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Outfit', sans-serif; 
+            background-color: var(--background); 
+            color: var(--text-main); 
+            display: flex; 
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .auth-container {
+            width: 100%;
+            max-width: 450px;
+            padding: 2rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .auth-card {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem 2rem;
+            box-shadow: var(--shadow-lg);
+            border: 1px solid var(--border);
+        }
+
+        .auth-header { text-align: center; margin-bottom: 2rem; }
+        .auth-header .logo-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: var(--primary-light);
+            color: var(--primary);
+            border-radius: 12px;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        .auth-header h1 { font-size: 1.5rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem; }
+        .auth-header p { color: var(--text-muted); font-size: 0.95rem; }
+
+        .form-group { margin-bottom: 1.2rem; }
+        .form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; font-size: 0.9rem; color: var(--text-main); }
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid var(--border);
+            font-family: 'Outfit';
+            font-size: 0.95rem;
+            transition: all 0.2s;
+            background: var(--background);
+        }
+        .form-control:focus { outline: none; border-color: var(--primary); background: white; box-shadow: 0 0 0 3px var(--primary-light); }
+
+        .btn {
+            width: 100%;
+            padding: 0.75rem 1.2rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            font-family: 'Outfit';
+            transition: all 0.2s;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-size: 1rem;
+        }
+        .btn-primary { background: var(--primary); color: white; box-shadow: 0 4px 14px 0 rgba(67, 56, 202, 0.39); }
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(67, 56, 202, 0.23); }
+
+        .auth-links { text-align: center; margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-muted); }
+        .auth-links a { color: var(--primary); text-decoration: none; font-weight: 600; transition: color 0.2s; }
+        .auth-links a:hover { color: var(--primary-hover); text-decoration: underline; }
+
+        .alert {
+            padding: 1rem 1.25rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+        .alert-success { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+
+    <div class="auth-container">
+        @yield('content')
+    </div>
+
+</body>
+</html>

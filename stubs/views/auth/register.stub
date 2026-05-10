@@ -1,0 +1,53 @@
+@extends('auth.layout')
+@section('title', 'Create Account')
+
+@section('content')
+<div class="auth-card">
+    <div class="auth-header">
+        <div class="logo-icon"><i class="fas fa-user-plus"></i></div>
+        <h1>Create Account</h1>
+        <p>Join us and setup your workspace</p>
+    </div>
+
+    <form method="POST" action="{{ route('register') }}">
+        @csrf
+
+        <div class="form-group">
+            <label class="form-label" for="name">Full Name</label>
+            <input id="name" type="text" class="form-control" name="name" value="{{ old('name') }}" required autofocus placeholder="John Doe">
+            @error('name')
+                <span style="color: var(--danger); font-size: 0.8rem; margin-top: 4px; display: block;">{{ $message }}</span>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="email">Email Address</label>
+            <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required placeholder="name@example.com">
+            @error('email')
+                <span style="color: var(--danger); font-size: 0.8rem; margin-top: 4px; display: block;">{{ $message }}</span>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label class="form-label" for="password">Password</label>
+            <input id="password" type="password" class="form-control" name="password" required placeholder="••••••••">
+            @error('password')
+                <span style="color: var(--danger); font-size: 0.8rem; margin-top: 4px; display: block;">{{ $message }}</span>
+            @enderror
+        </div>
+
+        <div class="form-group" style="margin-bottom: 2rem;">
+            <label class="form-label" for="password-confirm">Confirm Password</label>
+            <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required placeholder="••••••••">
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Create Account
+        </button>
+    </form>
+
+    <div class="auth-links">
+        Already have an account? <a href="{{ route('login') }}">Sign in instead</a>
+    </div>
+</div>
+@endsection

@@ -56,6 +56,19 @@ class InstallRbac extends Command
         $this->publishStub('Controllers/RoleController.stub',   app_path('Http/Controllers/Rbac/RoleController.php'),   ['namespace' => $namespace]);
         $this->publishStub('Controllers/ModuleController.stub', app_path('Http/Controllers/Rbac/ModuleController.php'), ['namespace' => $namespace]);
 
+        // ── 4.5. Auth Scaffolding ─────────────────────────────────────────────
+        $this->section('Auth Scaffolding');
+        $this->ensureDirectoryExists(app_path('Http/Controllers/Auth'));
+        $this->publishStub('Controllers/Auth/AuthController.stub', app_path('Http/Controllers/Auth/AuthController.php'), ['namespace' => $namespace]);
+        $this->publishStub('Controllers/Auth/PasswordResetController.stub', app_path('Http/Controllers/Auth/PasswordResetController.php'), ['namespace' => $namespace]);
+        
+        $this->ensureDirectoryExists(resource_path('views/auth/passwords'));
+        $this->publishStub('views/auth/layout.stub', resource_path('views/auth/layout.blade.php'));
+        $this->publishStub('views/auth/login.stub', resource_path('views/auth/login.blade.php'));
+        $this->publishStub('views/auth/register.stub', resource_path('views/auth/register.blade.php'));
+        $this->publishStub('views/auth/passwords/email.stub', resource_path('views/auth/passwords/email.blade.php'));
+        $this->publishStub('views/auth/passwords/reset.stub', resource_path('views/auth/passwords/reset.blade.php'));
+
         // ── 5. Views ──────────────────────────────────────────────────────────
         $this->section('Views');
         $this->ensureDirectoryExists(resource_path('views/rbac/roles'));
@@ -70,6 +83,10 @@ class InstallRbac extends Command
         // ── 6. Migration ──────────────────────────────────────────────────────
         $this->section('Migration');
         $this->copyMigration();
+
+        // ── 6.5 User Model Update ──────────────────────────────────────────────
+        $this->section('User Model Update');
+        $this->injectHasRbacTrait($namespace);
 
         // ── 7. Routes ─────────────────────────────────────────────────────────
         $this->section('Routes');
@@ -215,6 +232,19 @@ class InstallRbac extends Command
 
 
 // ============================================================
+// Authentication Routes (added by zakirjarir/rbac-automator)
+// ============================================================
+Route::get('login', 'App\Http\Controllers\Auth\AuthController@showLoginForm')->name('login');
+Route::post('login', 'App\Http\Controllers\Auth\AuthController@login');
+Route::get('register', 'App\Http\Controllers\Auth\AuthController@showRegistrationForm')->name('register');
+Route::post('register', 'App\Http\Controllers\Auth\AuthController@register');
+Route::post('logout', 'App\Http\Controllers\Auth\AuthController@logout')->name('logout');
+Route::get('password/reset', 'App\Http\Controllers\Auth\PasswordResetController@showLinkRequestForm')->name('password.request');
+Route::post('password/email', 'App\Http\Controllers\Auth\PasswordResetController@sendResetLinkEmail')->name('password.email');
+Route::get('password/reset/{token}', 'App\Http\Controllers\Auth\PasswordResetController@showResetForm')->name('password.reset');
+Route::post('password/reset', 'App\Http\Controllers\Auth\PasswordResetController@reset')->name('password.update');
+
+// ============================================================
 // RBAC Routes  (added by zakirjarir/rbac-automator)
 // TIP: Add 'auth' to the middleware array if you want to
 //      require authentication to access the RBAC dashboard.
@@ -239,6 +269,47 @@ ROUTES;
         File::append($routeFile, $routes);
         $this->line("   <fg=green>✔  Updated:</> routes/web.php");
         $this->created++;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  Trait Injection
+    // ─────────────────────────────────────────────────────────────────────────
+
+    protected function injectHasRbacTrait(string $namespace): void
+    {
+        $userModelPath = app_path('Models/User.php');
+        
+        if (!File::exists($userModelPath)) {
+            $this->warn("   ⚠  User model not found at app/Models/User.php. Please add HasRbac trait manually.");
+            $this->skipped++;
+            return;
+        }
+
+        $content = File::get($userModelPath);
+
+        if (Str::contains($content, 'use HasRbac;')) {
+            $this->line("   <fg=yellow>⊙  Skipped:</> HasRbac trait already exists in User model");
+            $this->skipped++;
+            return;
+        }
+
+        // Add the use statement at the top if not exists
+        $traitImport = "use {$namespace}Traits\HasRbac;";
+        if (!Str::contains($content, $traitImport)) {
+            $content = preg_replace('/(namespace .*?;)/', "$1\n\n{$traitImport}", $content);
+        }
+
+        // Add HasRbac inside the class use statement
+        $content = preg_replace('/(use HasApiTokens, HasFactory, Notifiable;)/', "$1\n    use HasRbac;", $content);
+        
+        // Fallback if standard Laravel traits are missing or modified
+        if (!Str::contains($content, 'use HasRbac;')) {
+            $content = preg_replace('/(class User extends Authenticatable\s*\{)/', "$1\n    use HasRbac;\n", $content);
+        }
+
+        File::put($userModelPath, $content);
+        $this->line("   <fg=green>✔  Updated:</> Injected HasRbac trait into User model");
+        $this->fixed++;
     }
 
     // ─────────────────────────────────────────────────────────────────────────
