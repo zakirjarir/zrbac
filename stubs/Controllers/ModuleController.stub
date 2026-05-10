@@ -8,6 +8,7 @@ use {{namespace}}Models\Role;
 use {{namespace}}Models\Permission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
+use Illuminate\Validation\Rule;
 
 class ModuleController extends Controller
 {
@@ -35,8 +36,7 @@ class ModuleController extends Controller
             $seederContent .= "        ]);\n\n";
 
             foreach ($module->permissions as $permission) {
-                $seederContent .= "        Permission::updateOrCreate(['slug' => '{$permission->slug}'], [\n";
-                $seederContent .= "            'module_id' => \$module->id,\n";
+                $seederContent .= "        Permission::updateOrCreate(['module_id' => \$module->id, 'slug' => '{$permission->slug}'], [\n";
                 $seederContent .= "            'name' => '{$permission->name}',\n";
                 $seederContent .= "        ]);\n";
             }
@@ -74,7 +74,12 @@ class ModuleController extends Controller
 
     public function addPermission(Request $request, Module $module)
     {
-        $request->validate(['name' => 'required']);
+        $request->validate([
+            'name' => [
+                'required',
+                Rule::unique('permissions', 'name')->where('module_id', $module->id)
+            ]
+        ]);
         $module->permissions()->create(['name' => $request->name, 'slug' => str($request->name)->slug()]);
         return back()->with('success', 'Permission added.');
     }

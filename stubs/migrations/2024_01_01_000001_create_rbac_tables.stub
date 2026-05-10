@@ -33,7 +33,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('module_id')->constrained()->onDelete('cascade');
             $table->string('name');
-            $table->string('slug')->unique();
+            $table->string('slug');
+            $table->unique(['module_id', 'slug']);
             $table->timestamps();
         });
 
