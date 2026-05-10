@@ -48,7 +48,8 @@ class InstallRbac extends Command
         // ── 2. Middleware ─────────────────────────────────────────────────────
         $this->section('Middleware');
         $this->ensureDirectoryExists(app_path('Http/Middleware'));
-        $this->publishStub('Middleware/CheckPermission.stub', app_path('Http/Middleware/CheckPermission.php'), $replacements);
+        $this->publishStub('Middleware/RbacMiddleware.stub', app_path('Http/Middleware/RbacMiddleware.php'), $replacements);
+        $this->publishStub('Middleware/SetLocale.stub', app_path('Http/Middleware/SetLocale.php'), $replacements);
 
         // ── 3. Traits ─────────────────────────────────────────────────────────
         $this->section('Traits');
@@ -90,6 +91,7 @@ class InstallRbac extends Command
         $this->publishStub('views/modules/index.stub', resource_path('views/rbac/modules/index.blade.php'), $replacements);
         $this->publishStub('views/users/index.stub',   resource_path('views/rbac/users/index.blade.php'), $replacements);
         $this->publishStub('views/profile/edit.stub',  resource_path('views/rbac/profile/edit.blade.php'), $replacements);
+        $this->publishStub('views/ui_demo.stub',      resource_path('views/rbac/ui_demo.blade.php'), $replacements);
 
         // ── 6. Migration ──────────────────────────────────────────────────────
         $this->section('Migration');
@@ -322,9 +324,10 @@ Route::group([
     'prefix'     => 'rbac',
     'as'         => 'rbac.',
     'namespace'  => 'App\Http\Controllers\Rbac',
-    'middleware' => ['web', 'auth'],
+    'middleware' => ['web', 'auth', \App\Http\Middleware\SetLocale::class],
 ], function () {
     Route::get('/dashboard', function () { return view('rbac.dashboard'); })->name('dashboard');
+    Route::get('/ui-demo',   function () { return view('rbac.ui_demo'); })->name('ui-demo');
     Route::resource('roles', 'RoleController');
     Route::get('/users',                          'UserController@index')->name('users.index');
     Route::post('/users/{user}/roles',            'UserController@updateRoles')->name('users.roles.update');

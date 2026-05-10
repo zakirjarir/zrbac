@@ -136,6 +136,20 @@
                     @endforeach
                 </select>
             </div>
+
+            <div class="form-group" style="background: var(--background); padding: 15px; border-radius: 8px; margin-top: 1rem; border: 1px solid var(--border);">
+                <label class="form-label" style="font-weight: 700; margin-bottom: 10px; display: block;"><i class="fas fa-language"></i> Translations (I18n)</label>
+                <div style="display: grid; gap: 10px;">
+                    <div>
+                        <label style="font-size: 0.8rem; color: var(--text-muted);">English Name</label>
+                        <input type="text" name="translations[en]" class="form-control" placeholder="e.g. Dashboard">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.8rem; color: var(--text-muted);">Bangla Name (বাংলা নাম)</label>
+                        <input type="text" name="translations[bn]" class="form-control" placeholder="যেমন: ড্যাশবোর্ড">
+                    </div>
+                </div>
+            </div>
             
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 2rem;">
                 <button type="button" class="btn btn-outline" onclick="document.getElementById('addModuleModal').style.display='none'">Cancel</button>
@@ -173,6 +187,20 @@
                         <option value="{{ $pm->id }}">{{ $pm->name }}</option>
                     @endforeach
                 </select>
+            </div>
+
+            <div class="form-group" style="background: var(--background); padding: 15px; border-radius: 8px; margin-top: 1rem; border: 1px solid var(--border);">
+                <label class="form-label" style="font-weight: 700; margin-bottom: 10px; display: block;"><i class="fas fa-language"></i> Translations (I18n)</label>
+                <div style="display: grid; gap: 10px;">
+                    <div>
+                        <label style="font-size: 0.8rem; color: var(--text-muted);">English Name</label>
+                        <input type="text" name="translations[en]" id="edit_lang_en" class="form-control">
+                    </div>
+                    <div>
+                        <label style="font-size: 0.8rem; color: var(--text-muted);">Bangla Name (বাংলা নাম)</label>
+                        <input type="text" name="translations[bn]" id="edit_lang_bn" class="form-control">
+                    </div>
+                </div>
             </div>
             
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 2rem;">

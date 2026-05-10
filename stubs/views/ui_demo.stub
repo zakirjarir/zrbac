@@ -1,0 +1,124 @@
+@extends('rbac.layout')
+
+@section('content')
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+        <h2 style="font-size: 1.8rem; font-weight: 700; color: var(--text-main);">{{ __('UI Component Demo') }}</h2>
+        <p style="color: var(--text-muted);">{{ __('Explore the premium design elements available in this package.') }}</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <button class="btn btn-outline"><i class="fas fa-download"></i> {{ __('Export Settings') }}</button>
+        <button class="btn btn-primary"><i class="fas fa-plus"></i> {{ __('Create New') }}</button>
+    </div>
+</div>
+
+<!-- Stats Grid -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="card" style="border-left: 4px solid var(--primary);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">{{ __('Total Revenue') }}</p>
+                <h3 style="font-size: 1.5rem; margin-top: 5px;">$45,285</h3>
+            </div>
+            <div style="background: var(--primary-light); color: var(--primary); padding: 10px; border-radius: 12px;">
+                <i class="fas fa-dollar-sign"></i>
+            </div>
+        </div>
+        <p style="margin-top: 15px; font-size: 0.85rem; color: var(--success);"><i class="fas fa-arrow-up"></i> 12% {{ __('from last month') }}</p>
+    </div>
+
+    <div class="card" style="border-left: 4px solid var(--success);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">{{ __('Active Users') }}</p>
+                <h3 style="font-size: 1.5rem; margin-top: 5px;">2,450</h3>
+            </div>
+            <div style="background: #d1fae5; color: #059669; padding: 10px; border-radius: 12px;">
+                <i class="fas fa-users"></i>
+            </div>
+        </div>
+        <p style="margin-top: 15px; font-size: 0.85rem; color: var(--success);"><i class="fas fa-arrow-up"></i> 5% {{ __('new signups') }}</p>
+    </div>
+
+    <div class="card" style="border-left: 4px solid var(--warning);">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+            <div>
+                <p style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase;">{{ __('System Health') }}</p>
+                <h3 style="font-size: 1.5rem; margin-top: 5px;">99.9%</h3>
+            </div>
+            <div style="background: #fef3c7; color: #d97706; padding: 10px; border-radius: 12px;">
+                <i class="fas fa-server"></i>
+            </div>
+        </div>
+        <p style="margin-top: 15px; font-size: 0.85rem; color: var(--text-muted);">{{ __('All systems operational') }}</p>
+    </div>
+</div>
+
+<div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.5rem;">
+    <!-- Form Demo -->
+    <div class="card">
+        <h4 style="margin-bottom: 1.5rem; font-size: 1.1rem; font-weight: 600;">{{ __('Modern Form Design') }}</h4>
+        <form onsubmit="event.preventDefault(); alert('Form submitted!');">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group">
+                    <label class="form-label">{{ __('First Name') }}</label>
+                    <input type="text" class="form-control" placeholder="John">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">{{ __('Last Name') }}</label>
+                    <input type="text" class="form-control" placeholder="Doe">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="form-label">{{ __('Email Address') }}</label>
+                <input type="email" class="form-control" placeholder="john@example.com">
+            </div>
+            <div class="form-group">
+                <label class="form-label">{{ __('Account Type') }}</label>
+                <select class="form-control">
+                    <option>{{ __('Personal') }}</option>
+                    <option>{{ __('Business') }}</option>
+                    <option>{{ __('Enterprise') }}</option>
+                </select>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-top: 1rem;">
+                <input type="checkbox" id="terms" style="width: 18px; height: 18px; accent-color: var(--primary);">
+                <label for="terms" style="font-size: 0.9rem; color: var(--text-muted);">{{ __('I agree to the terms and conditions') }}</label>
+            </div>
+            <div style="margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary" style="width: 100%; padding: 12px;">{{ __('Save Changes') }}</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Buttons & Alerts -->
+    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+        <div class="card">
+            <h4 style="margin-bottom: 1.5rem; font-size: 1.1rem; font-weight: 600;">{{ __('Button Styles') }}</h4>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px;">
+                <button class="btn btn-primary">{{ __('Primary') }}</button>
+                <button class="btn btn-outline">{{ __('Outline') }}</button>
+                <button class="btn btn-success">{{ __('Success') }}</button>
+                <button class="btn" style="background: var(--danger); color: white;">{{ __('Danger') }}</button>
+                <button class="btn" style="background: var(--warning); color: white;">{{ __('Warning') }}</button>
+            </div>
+            
+            <h4 style="margin-top: 2rem; margin-bottom: 1.5rem; font-size: 1.1rem; font-weight: 600;">{{ __('Alerts') }}</h4>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle"></i> {{ __('Success alert message here.') }}
+                </div>
+                <div class="alert" style="background: #fef2f2; border: 1px solid #fecaca; color: #991b1b;">
+                    <i class="fas fa-exclamation-circle"></i> {{ __('Error alert message here.') }}
+                </div>
+            </div>
+        </div>
+
+        <div class="card" style="background: linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%); color: white; border: none;">
+            <h4 style="margin-bottom: 1rem; font-size: 1.1rem; font-weight: 600;">{{ __('Upgrade to Pro') }}</h4>
+            <p style="font-size: 0.9rem; opacity: 0.9; margin-bottom: 1.5rem;">{{ __('Get access to advanced features and priority support.') }}</p>
+            <button class="btn" style="background: white; color: var(--primary); font-weight: 700; width: 100%;">{{ __('Upgrade Now') }}</button>
+        </div>
+    </div>
+</div>
+@endsection
