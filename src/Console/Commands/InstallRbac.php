@@ -283,6 +283,30 @@ class InstallRbac extends Command
             $updated = true;
         }
 
+        // ── Case 6: RBAC Routes exist but are missing the new UI Demo route ──────
+        if (Str::contains($routeContent, 'RBAC Routes') && !Str::contains($routeContent, 'rbac.ui-demo')) {
+             $routeContent = str_replace(
+                "Route::resource('roles', 'RoleController');",
+                "Route::resource('roles', 'RoleController');\n    Route::get('/ui-demo',                       function () { return view('rbac.ui_demo'); })->name('ui-demo');",
+                $routeContent
+            );
+            $this->line("   <fg=green>✔  Updated:</> Added missing UI Demo route to existing RBAC block.");
+            $this->fixed++;
+            $updated = true;
+        }
+
+        // ── Case 7: RBAC Routes exist but are missing the SetLocale middleware ──────
+        if (Str::contains($routeContent, "'middleware' => ['web', 'auth']") && !Str::contains($routeContent, 'SetLocale')) {
+             $routeContent = str_replace(
+                "'middleware' => ['web', 'auth']",
+                "'middleware' => ['web', 'auth', \App\Http\Middleware\SetLocale::class]",
+                $routeContent
+            );
+            $this->line("   <fg=green>✔  Updated:</> Added SetLocale middleware to existing RBAC route group.");
+            $this->fixed++;
+            $updated = true;
+        }
+
         // ── Append Auth Routes if missing ────────────────────────────────────
         if (!Str::contains($routeContent, 'Authentication Routes')) {
             $authRoutes = <<<'ROUTES'
