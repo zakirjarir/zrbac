@@ -44,6 +44,7 @@ class InstallRbac extends Command
         $this->publishStub('Models/Module.stub',     app_path('Models/Module.php'),     $replacements);
         $this->publishStub('Models/Role.stub',       app_path('Models/Role.php'),       $replacements);
         $this->publishStub('Models/Permission.stub', app_path('Models/Permission.php'), $replacements);
+        $this->publishStub('Models/Language.stub',   app_path('Models/Language.php'),   $replacements);
 
         // ── 2. Middleware ─────────────────────────────────────────────────────
         $this->section('Middleware');
@@ -63,6 +64,7 @@ class InstallRbac extends Command
         $this->publishStub('Controllers/ModuleController.stub', app_path('Http/Controllers/Rbac/ModuleController.php'), $replacements);
         $this->publishStub('Controllers/UserController.stub',   app_path('Http/Controllers/Rbac/UserController.php'),   $replacements);
         $this->publishStub('Controllers/ProfileController.stub', app_path('Http/Controllers/Rbac/ProfileController.php'), $replacements);
+        $this->publishStub('Controllers/LanguageController.stub', app_path('Http/Controllers/Rbac/LanguageController.php'), $replacements);
 
         // ── 4.5. Auth Scaffolding ─────────────────────────────────────────────
         $this->section('Auth Scaffolding');
@@ -90,6 +92,8 @@ class InstallRbac extends Command
         $this->publishStub('views/roles/edit.stub',    resource_path('views/rbac/roles/edit.blade.php'), $replacements);
         $this->publishStub('views/modules/index.stub', resource_path('views/rbac/modules/index.blade.php'), $replacements);
         $this->publishStub('views/users/index.stub',   resource_path('views/rbac/users/index.blade.php'), $replacements);
+        $this->ensureDirectoryExists(resource_path('views/rbac/languages'));
+        $this->publishStub('views/languages/index.stub', resource_path('views/rbac/languages/index.blade.php'), $replacements);
         $this->publishStub('views/profile/edit.stub',  resource_path('views/rbac/profile/edit.blade.php'), $replacements);
         $this->publishStub('views/ui_demo.stub',      resource_path('views/rbac/ui_demo.blade.php'), $replacements);
 
@@ -352,6 +356,7 @@ Route::group([
 ], function () {
     Route::get('/dashboard', function () { return view('rbac.dashboard'); })->name('dashboard');
     Route::get('/ui-demo',   function () { return view('rbac.ui_demo'); })->name('ui-demo');
+    Route::resource('languages',                  'LanguageController');
     Route::resource('roles', 'RoleController');
     Route::get('/users',                          'UserController@index')->name('users.index');
     Route::post('/users/{user}/roles',            'UserController@updateRoles')->name('users.roles.update');

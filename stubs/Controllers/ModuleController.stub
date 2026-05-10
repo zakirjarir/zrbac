@@ -17,7 +17,8 @@ class ModuleController extends Controller
         $modules = Module::with(['permissions', 'children'])->whereNull('parent_id')->get();
         $allPermissions = Permission::distinct()->pluck('name')->toArray();
         $parentModules = Module::whereNull('parent_id')->get();
-        return view('rbac.modules.index', compact('modules', 'allPermissions', 'parentModules'));
+        $languages = Language::where('status', true)->get();
+        return view('rbac.modules.index', compact('modules', 'allPermissions', 'parentModules', 'languages'));
     }
 
     public function showModule($slug)

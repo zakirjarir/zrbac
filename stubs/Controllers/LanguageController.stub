@@ -1,0 +1,51 @@
+<?php
+
+namespace {{namespace}}Http\Controllers\Rbac;
+
+use {{namespace}}Http\Controllers\Controller;
+use {{namespace}}Models\Language;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File;
+
+class LanguageController extends Controller
+{
+    public function index()
+    {
+        $languages = Language::all();
+        return view('rbac.languages.index', compact('languages'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'name' => 'required',
+            'code' => 'required|unique:languages,code',
+        ]);
+
+        if ($request->is_default) {
+            Language::where('is_default', true)->update(['is_default' => false]);
+        }
+
+        Language::create($request->all());
+
+        // Create the JSON file if it doesn't exist
+        $path = base_path("lang/{$request->code}.json");
+        if (!File::exists($path)) {
+            if (!File::exists(base_path('lang'))) {
+                File::makeDirectory(base_path('lang'), 0755, true);
+            }
+            File::put($path, json_encode([], JSON_PRETTY_PRINT));
+        }
+
+        return back()->with('success', 'Language added successfully.');
+    }
+
+    public function destroy(Language $language)
+    {
+        if ($language->is_default) {
+            return back()->with('error', 'Cannot delete default language.');
+        }
+        $language->delete();
+        return back()->with('success', 'Language deleted.');
+    }
+}

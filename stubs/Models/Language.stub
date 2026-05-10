@@ -1,0 +1,10 @@
+<?php
+
+namespace {{namespace}}Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Language extends Model
+{
+    protected $fillable = ['name', 'code', 'flag', 'is_default', 'status'];
+}

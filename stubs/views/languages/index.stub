@@ -1,0 +1,81 @@
+@extends('rbac.layout')
+
+@section('content')
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <div>
+        <h2 style="font-size: 1.8rem; font-weight: 700; color: var(--text-main);">{{ __('Language Management') }}</h2>
+        <p style="color: var(--text-muted);">{{ __('Manage system languages and translation files.') }}</p>
+    </div>
+    <button onclick="document.getElementById('addLangModal').style.display='flex'" class="btn btn-primary">
+        <i class="fas fa-plus"></i> {{ __('Add Language') }}
+    </button>
+</div>
+
+<div class="card">
+    <table class="table" style="width: 100%; border-collapse: collapse;">
+        <thead>
+            <tr>
+                <th>{{ __('Name') }}</th>
+                <th>{{ __('Code') }}</th>
+                <th>{{ __('Status') }}</th>
+                <th>{{ __('Default') }}</th>
+                <th>{{ __('Actions') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($languages as $lang)
+            <tr>
+                <td>{{ $lang->name }}</td>
+                <td><code style="background: var(--primary-light); color: var(--primary); padding: 2px 6px; border-radius: 4px;">{{ $lang->code }}</code></td>
+                <td>
+                    <span class="badge {{ $lang->status ? 'badge-success' : 'badge-warning' }}">
+                        {{ $lang->status ? __('Active') : __('Inactive') }}
+                    </span>
+                </td>
+                <td>
+                    @if($lang->is_default)
+                        <span class="badge badge-primary">{{ __('Default') }}</span>
+                    @else
+                        -
+                    @endif
+                </td>
+                <td>
+                    @if(!$lang->is_default)
+                    <form action="{{ route('rbac.languages.destroy', $lang->id) }}" method="POST" onsubmit="return confirm('Delete this language?');">
+                        @csrf @method('DELETE')
+                        <button type="submit" style="background: none; border: none; color: var(--danger); cursor: pointer;"><i class="fas fa-trash"></i></button>
+                    </form>
+                    @endif
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
+</div>
+
+<!-- Add Modal -->
+<div id="addLangModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px); z-index: 1050; align-items: center; justify-content: center;">
+    <div class="card" style="width: 100%; max-width: 400px; margin: 20px;">
+        <h3 style="margin-bottom: 1.5rem;">{{ __('Add New Language') }}</h3>
+        <form action="{{ route('rbac.languages.store') }}" method="POST">
+            @csrf
+            <div class="form-group">
+                <label class="form-label">{{ __('Language Name') }}</label>
+                <input type="text" name="name" class="form-control" placeholder="e.g. French" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">{{ __('Language Code') }}</label>
+                <input type="text" name="code" class="form-control" placeholder="e.g. fr" required>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1.5rem;">
+                <input type="checkbox" name="is_default" value="1" id="is_default">
+                <label for="is_default" style="font-size: 0.9rem; color: var(--text-muted);">{{ __('Set as Default') }}</label>
+            </div>
+            <div style="display: flex; justify-content: flex-end; gap: 10px;">
+                <button type="button" class="btn btn-outline" onclick="document.getElementById('addLangModal').style.display='none'">{{ __('Cancel') }}</button>
+                <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
+            </div>
+        </form>
+    </div>
+</div>
+@endsection

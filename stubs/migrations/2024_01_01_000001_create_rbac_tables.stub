@@ -9,6 +9,16 @@ return new class extends Migration
     public function up(): void
     {
         // Modules Table
+        Schema::create('languages', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('code')->unique(); // e.g., 'en', 'bn', 'fr'
+            $table->string('flag')->nullable();
+            $table->boolean('is_default')->default(false);
+            $table->boolean('status')->default(true);
+            $table->timestamps();
+        });
+
         Schema::create('modules', function (Blueprint $table) {
             $table->id();
             $table->string('name')->unique();

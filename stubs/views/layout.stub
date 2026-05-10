@@ -436,9 +436,14 @@
 
             <div style="display: flex; align-items: center; gap: 1.5rem;">
                 <!-- Language Switcher -->
+                @php
+                    $activeLangs = \{{namespace}}Models\Language::where('status', true)->get();
+                @endphp
                 <div class="lang-switcher" style="display: flex; gap: 5px; background: var(--border-light); padding: 4px; border-radius: 20px;">
-                    <a href="?lang=en" style="padding: 4px 10px; border-radius: 15px; font-size: 0.75rem; font-weight: 600; text-decoration: none; {{ app()->getLocale() == 'en' ? 'background: var(--primary); color: white;' : 'color: var(--text-muted);' }}">EN</a>
-                    <a href="?lang=bn" style="padding: 4px 10px; border-radius: 15px; font-size: 0.75rem; font-weight: 600; text-decoration: none; {{ app()->getLocale() == 'bn' ? 'background: var(--primary); color: white;' : 'color: var(--text-muted);' }}">BN</a>
+                    @foreach($activeLangs as $al)
+                        <a href="?lang={{ $al->code }}" style="padding: 4px 10px; border-radius: 15px; font-size: 0.75rem; font-weight: 600; text-decoration: none; {{ app()->getLocale() == $al->code ? 'background: var(--primary); color: white;' : 'color: var(--text-muted);' }}">{{ strtoupper($al->code) }}</a>
+                    @endforeach
+                    <a href="{{ route('rbac.languages.index') }}" title="{{ __('Manage Languages') }}" style="padding: 4px 10px; color: var(--text-muted);"><i class="fas fa-cog"></i></a>
                 </div>
 
                 <!-- Theme Switcher -->
