@@ -1,0 +1,29 @@
+<?php
+
+namespace {{namespace}}Http\Controllers\Rbac;
+
+use {{namespace}}Http\Controllers\Controller;
+use {{namespace}}Models\User;
+use {{namespace}}Models\Role;
+use Illuminate\Http\Request;
+
+class UserController extends Controller
+{
+    public function index()
+    {
+        $users = User::with('roles')->paginate(10);
+        $roles = Role::all();
+        return view('rbac.users.index', compact('users', 'roles'));
+    }
+
+    public function updateRoles(Request $request, User $user)
+    {
+        $request->validate([
+            'roles' => 'array'
+        ]);
+
+        $user->roles()->sync($request->roles);
+
+        return back()->with('success', "Roles updated for user: {$user->name}");
+    }
+}

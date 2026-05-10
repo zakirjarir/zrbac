@@ -1,0 +1,107 @@
+@extends('rbac.layout')
+
+@section('content')
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">User Management</div>
+        <p style="color: var(--text-muted); font-size: 0.85rem;">Manage application users and their assigned roles.</p>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>User Details</th>
+                    <th>Email</th>
+                    <th>Assigned Roles</th>
+                    <th style="width: 150px; text-align: center;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @forelse($users as $user)
+                <tr>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                            <img src="https://ui-avatars.com/api/?name={{ $user->name }}&background=e0e7ff&color=4338ca&rounded=true" style="width: 35px; height: 35px;">
+                            <div style="font-weight: 600; color: var(--text-main);">{{ $user->name }}</div>
+                        </div>
+                    </td>
+                    <td>{{ $user->email }}</td>
+                    <td>
+                        <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                            @forelse($user->roles as $role)
+                                <span class="badge badge-primary">{{ $role->name }}</span>
+                            @empty
+                                <span style="color: var(--text-muted); font-size: 0.8rem; font-style: italic;">No roles assigned</span>
+                            @endforelse
+                        </div>
+                    </td>
+                    <td style="text-align: center;">
+                        <button onclick="openRoleModal({{ $user->id }}, '{{ $user->name }}', {{ $user->roles->pluck('id') }})" class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;">
+                            <i class="fas fa-user-tag"></i> Manage Roles
+                        </button>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="4" style="text-align: center; padding: 2rem;">No users found.</td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
+    </div>
+    
+    <div style="margin-top: 1.5rem;">
+        {{ $users->links() }}
+    </div>
+</div>
+
+<!-- Manage Roles Modal -->
+<div id="roleModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(4px); z-index: 1050; align-items: center; justify-content: center;">
+    <div class="card" style="width: 100%; max-width: 500px; margin: 20px; animation: slideDown 0.3s ease;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+            <h3 style="font-size: 1.2rem; font-weight: 600;">Manage Roles: <span id="modalUserName" style="color: var(--primary);"></span></h3>
+            <button onclick="closeRoleModal()" style="background: none; border: none; font-size: 1.2rem; color: var(--text-muted); cursor: pointer;"><i class="fas fa-times"></i></button>
+        </div>
+        
+        <form id="roleForm" method="POST">
+            @csrf
+            @method('POST')
+            <div class="form-group">
+                <label class="form-label">Select Roles</label>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; background: var(--background); padding: 1rem; border-radius: var(--radius-md); border: 1px solid var(--border);">
+                    @foreach($roles as $role)
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; padding: 8px; border-radius: 6px; transition: 0.2s;" onmouseover="this.style.background='var(--primary-light)'" onmouseout="this.style.background='transparent'">
+                        <input type="checkbox" name="roles[]" value="{{ $role->id }}" class="role-checkbox">
+                        <span style="font-size: 0.95rem; font-weight: 500;">{{ $role->name }}</span>
+                    </label>
+                    @endforeach
+                </div>
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 2rem;">
+                <button type="button" class="btn btn-outline" onclick="closeRoleModal()">Cancel</button>
+                <button type="submit" class="btn btn-primary">Update Roles</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openRoleModal(userId, userName, userRoles) {
+        document.getElementById('modalUserName').innerText = userName;
+        document.getElementById('roleForm').action = "{{ url('rbac/users') }}/" + userId + "/roles";
+        
+        // Reset checkboxes
+        document.querySelectorAll('.role-checkbox').forEach(cb => {
+            cb.checked = userRoles.includes(parseInt(cb.value));
+        });
+        
+        document.getElementById('roleModal').style.display = 'flex';
+    }
+
+    function closeRoleModal() {
+        document.getElementById('roleModal').style.display = 'none';
+    }
+</script>
+@endsection

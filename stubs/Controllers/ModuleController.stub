@@ -15,7 +15,8 @@ class ModuleController extends Controller
     public function index()
     {
         $modules = Module::with('permissions')->get();
-        return view('rbac.modules.index', compact('modules'));
+        $allPermissions = Permission::distinct()->pluck('name')->toArray();
+        return view('rbac.modules.index', compact('modules', 'allPermissions'));
     }
 
     public function generateSeeder()

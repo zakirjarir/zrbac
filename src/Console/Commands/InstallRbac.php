@@ -60,6 +60,7 @@ class InstallRbac extends Command
         $this->ensureDirectoryExists(app_path('Http/Controllers/Rbac'));
         $this->publishStub('Controllers/RoleController.stub',   app_path('Http/Controllers/Rbac/RoleController.php'),   $replacements);
         $this->publishStub('Controllers/ModuleController.stub', app_path('Http/Controllers/Rbac/ModuleController.php'), $replacements);
+        $this->publishStub('Controllers/UserController.stub',   app_path('Http/Controllers/Rbac/UserController.php'),   $replacements);
 
         // ── 4.5. Auth Scaffolding ─────────────────────────────────────────────
         $this->section('Auth Scaffolding');
@@ -78,12 +79,14 @@ class InstallRbac extends Command
         $this->section('Views');
         $this->ensureDirectoryExists(resource_path('views/rbac/roles'));
         $this->ensureDirectoryExists(resource_path('views/rbac/modules'));
+        $this->ensureDirectoryExists(resource_path('views/rbac/users'));
         $this->publishStub('views/layout.stub',        resource_path('views/rbac/layout.blade.php'), $replacements);
         $this->publishStub('views/dashboard.stub',     resource_path('views/rbac/dashboard.blade.php'), $replacements);
         $this->publishStub('views/roles/index.stub',   resource_path('views/rbac/roles/index.blade.php'), $replacements);
         $this->publishStub('views/roles/create.stub',  resource_path('views/rbac/roles/create.blade.php'), $replacements);
         $this->publishStub('views/roles/edit.stub',    resource_path('views/rbac/roles/edit.blade.php'), $replacements);
         $this->publishStub('views/modules/index.stub', resource_path('views/rbac/modules/index.blade.php'), $replacements);
+        $this->publishStub('views/users/index.stub',   resource_path('views/rbac/users/index.blade.php'), $replacements);
 
         // ── 6. Migration ──────────────────────────────────────────────────────
         $this->section('Migration');
@@ -272,6 +275,8 @@ Route::group([
 ], function () {
     Route::get('/dashboard', function () { return view('rbac.dashboard'); })->name('dashboard');
     Route::resource('roles', 'RoleController');
+    Route::get('/users',                          'UserController@index')->name('users.index');
+    Route::post('/users/{user}/roles',            'UserController@updateRoles')->name('users.roles.update');
     Route::get('/modules',                        'ModuleController@index')->name('modules.index');
     Route::post('/modules',                       'ModuleController@store')->name('modules.store');
     Route::delete('/modules/{module}',            'ModuleController@destroy')->name('modules.destroy');

@@ -298,7 +298,11 @@
             <div class="menu-label">Access Management</div>
             
             <a href="{{ route('rbac.roles.index') }}" class="nav-link {{ request()->routeIs('rbac.roles.*') ? 'active' : '' }}">
-                <i class="fas fa-user-shield"></i> Roles & Users
+                <i class="fas fa-user-shield"></i> Roles Management
+            </a>
+
+            <a href="{{ route('rbac.users.index') }}" class="nav-link {{ request()->routeIs('rbac.users.*') ? 'active' : '' }}">
+                <i class="fas fa-users"></i> User Management
             </a>
             
             <a href="{{ route('rbac.modules.index') }}" class="nav-link {{ request()->routeIs('rbac.modules.*') ? 'active' : '' }}">

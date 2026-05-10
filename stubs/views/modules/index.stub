@@ -49,10 +49,25 @@
             </div>
         </div>
 
-        <form action="{{ route('rbac.modules.permissions.store', $module->id) }}" method="POST" style="margin-top: auto; display: flex; gap: 8px;">
+        <form action="{{ route('rbac.modules.permissions.store', $module->id) }}" method="POST" style="margin-top: auto;">
             @csrf
-            <input type="text" name="name" class="form-control" placeholder="New permission (e.g. Create)" required style="padding: 0.5rem 0.8rem; font-size: 0.85rem;">
-            <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1rem;">Add</button>
+            <div style="display: flex; gap: 8px; margin-bottom: 8px;">
+                <input type="text" name="name" id="perm_input_{{ $module->id }}" class="form-control" placeholder="New permission (e.g. Create)" required style="padding: 0.5rem 0.8rem; font-size: 0.85rem;">
+                <button type="submit" class="btn btn-primary" style="padding: 0.5rem 1rem;">Add</button>
+            </div>
+            @if(count($allPermissions) > 0)
+            <div style="display: flex; flex-wrap: wrap; gap: 4px; padding: 5px; background: var(--border-light); border-radius: 6px;">
+                <span style="font-size: 0.7rem; color: var(--text-muted); width: 100%; margin-bottom: 2px;">Quick add:</span>
+                @foreach(collect($allPermissions)->take(10) as $pname)
+                    <span onclick="document.getElementById('perm_input_{{ $module->id }}').value='{{ $pname }}'" 
+                          style="font-size: 0.7rem; background: white; border: 1px solid var(--border); padding: 1px 6px; border-radius: 4px; cursor: pointer; transition: 0.2s;"
+                          onmouseover="this.style.borderColor='var(--primary)'; this.style.color='var(--primary)'"
+                          onmouseout="this.style.borderColor='var(--border)'; this.style.color='inherit'">
+                        {{ $pname }}
+                    </span>
+                @endforeach
+            </div>
+            @endif
         </form>
     </div>
     @empty
