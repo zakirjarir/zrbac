@@ -258,6 +258,18 @@ class InstallRbac extends Command
             $updated = true;
         }
 
+        // ── Case 4: RBAC Routes exist but are missing the new Module Page route ──────
+        if (Str::contains($routeContent, 'RBAC Routes') && !Str::contains($routeContent, 'rbac.module.page')) {
+             $routeContent = str_replace(
+                "Route::resource('roles', 'RoleController');",
+                "Route::resource('roles', 'RoleController');\n    Route::get('/m/{slug}',                       'ModuleController@showModule')->name('module.page');",
+                $routeContent
+            );
+            $this->line("   <fg=green>✔  Updated:</> Added missing Dynamic Module Page routes to existing RBAC block.");
+            $this->fixed++;
+            $updated = true;
+        }
+
         // ── Append Auth Routes if missing ────────────────────────────────────
         if (!Str::contains($routeContent, 'Authentication Routes')) {
             $authRoutes = <<<'ROUTES'
