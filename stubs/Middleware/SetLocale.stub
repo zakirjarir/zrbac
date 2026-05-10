@@ -10,12 +10,35 @@ class SetLocale
 {
     public function handle(Request $request, Closure $next)
     {
+        // 1. If language is explicitly requested via query parameter
         if ($request->has('lang')) {
-            session(['locale' => $request->lang]);
-        }
-
-        if (session()->has('locale')) {
+            $langCode = $request->lang;
+            
+            // Validate if language exists in DB
+            try {
+                $exists = \{{namespace}}Models\Language::where('code', $langCode)->where('status', true)->exists();
+                if ($exists) {
+                    session(['locale' => $langCode]);
+                    App::setLocale($langCode);
+                }
+            } catch (\Exception $e) {
+                // Table might not exist yet
+            }
+        } 
+        // 2. Else if language is stored in session
+        elseif (session()->has('locale')) {
             App::setLocale(session('locale'));
+        }
+        // 3. Fallback: Use default language from database
+        else {
+            try {
+                $defaultLang = \{{namespace}}Models\Language::where('is_default', true)->first();
+                if ($defaultLang) {
+                    App::setLocale($defaultLang->code);
+                }
+            } catch (\Exception $e) {
+                // Database might not be migrated yet
+            }
         }
 
         return $next($request);

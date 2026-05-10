@@ -2,8 +2,8 @@
 
 @section('content')
 <div style="margin-bottom: 2rem;">
-    <h1 style="font-size: 1.8rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">Welcome back, {{ auth()->user()->name ?? 'Admin' }}! 👋</h1>
-    <p style="color: var(--text-muted);">Manage your system access, roles, and permissions from this control panel.</p>
+    <h1 style="font-size: 1.8rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">{{ __('Welcome back') }}, {{ auth()->user()->name ?? __('Admin') }}! 👋</h1>
+    <p style="color: var(--text-muted);">{{ __('Manage your system access, roles, and permissions from this control panel.') }}</p>
 </div>
 
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
@@ -14,7 +14,7 @@
         </div>
         <div>
             <h3 style="font-size: 2rem; font-weight: 700; line-height: 1;">{{ \{{namespace}}Models\Role::count() ?? 0 }}</h3>
-            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500; margin-top: 4px;">Total Roles</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500; margin-top: 4px;">{{ __('Total Roles') }}</p>
         </div>
     </div>
 
@@ -25,7 +25,7 @@
         </div>
         <div>
             <h3 style="font-size: 2rem; font-weight: 700; line-height: 1;">{{ \{{namespace}}Models\Module::count() ?? 0 }}</h3>
-            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500; margin-top: 4px;">Active Modules</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500; margin-top: 4px;">{{ __('Active Modules') }}</p>
         </div>
     </div>
 
@@ -36,7 +36,7 @@
         </div>
         <div>
             <h3 style="font-size: 2rem; font-weight: 700; line-height: 1;">{{ \{{namespace}}Models\Permission::count() ?? 0 }}</h3>
-            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500; margin-top: 4px;">Total Permissions</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500; margin-top: 4px;">{{ __('Total Permissions') }}</p>
         </div>
     </div>
 
@@ -47,21 +47,21 @@
         </div>
         <div>
             <h3 style="font-size: 2rem; font-weight: 700; line-height: 1;">{{ \{{namespace}}Models\User::count() ?? 0 }}</h3>
-            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500; margin-top: 4px;">Total Users</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem; font-weight: 500; margin-top: 4px;">{{ __('Total Users') }}</p>
         </div>
     </div>
 </div>
 
 <div class="card">
     <div class="card-header">
-        <div class="card-title">Quick Actions</div>
+        <div class="card-title">{{ __('Quick Actions') }}</div>
     </div>
     <div style="display: flex; gap: 1rem;">
         <a href="{{ route('rbac.roles.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Create New Role
+            <i class="fas fa-plus"></i> {{ __('Create New Role') }}
         </a>
         <a href="{{ route('rbac.modules.index') }}" class="btn btn-outline">
-            <i class="fas fa-cog"></i> Manage Modules
+            <i class="fas fa-cog"></i> {{ __('Manage Modules') }}
         </a>
     </div>
 </div>

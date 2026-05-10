@@ -1,12 +1,12 @@
 @extends('auth.layout')
-@section('title', 'Sign In')
+@section('title', __('Sign In'))
 
 @section('content')
 <div class="auth-card">
     <div class="auth-header">
         <div class="logo-icon"><i class="fas fa-shield-halved"></i></div>
-        <h1>Welcome Back</h1>
-        <p>Sign in to access your dashboard</p>
+        <h1>{{ __('Welcome Back') }}</h1>
+        <p>{{ __('Sign in to access your dashboard') }}</p>
     </div>
 
     @if (session('status'))
@@ -19,7 +19,7 @@
         @csrf
 
         <div class="form-group">
-            <label class="form-label" for="email">Email Address</label>
+            <label class="form-label" for="email">{{ __('Email Address') }}</label>
             <input id="email" type="email" class="form-control" name="email" value="{{ old('email') }}" required autofocus placeholder="name@example.com">
             @error('email')
                 <span style="color: var(--danger); font-size: 0.8rem; margin-top: 4px; display: block;">{{ $message }}</span>
@@ -28,8 +28,8 @@
 
         <div class="form-group">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                <label class="form-label" for="password" style="margin-bottom: 0;">Password</label>
-                <a href="{{ route('password.request') }}" style="font-size: 0.85rem; color: var(--primary); text-decoration: none; font-weight: 500;">Forgot Password?</a>
+                <label class="form-label" for="password" style="margin-bottom: 0;">{{ __('Password') }}</label>
+                <a href="{{ route('password.request') }}" style="font-size: 0.85rem; color: var(--primary); text-decoration: none; font-weight: 500;">{{ __('Forgot Password?') }}</a>
             </div>
             <input id="password" type="password" class="form-control" name="password" required placeholder="••••••••">
             @error('password')
@@ -40,17 +40,17 @@
         <div class="form-group" style="margin-bottom: 2rem;">
             <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
                 <input type="checkbox" name="remember" id="remember" {{ old('remember') ? 'checked' : '' }} style="width: 16px; height: 16px; accent-color: var(--primary);">
-                <span style="font-size: 0.9rem; color: var(--text-main);">Remember me</span>
+                <span style="font-size: 0.9rem; color: var(--text-main);">{{ __('Remember me') }}</span>
             </label>
         </div>
 
         <button type="submit" class="btn btn-primary">
-            Sign In
+            {{ __('Sign In') }}
         </button>
     </form>
 
     <div class="auth-links">
-        Don't have an account? <a href="{{ route('register') }}">Create one now</a>
+        {{ __("Don't have an account?") }} <a href="{{ route('register') }}">{{ __('Create one now') }}</a>
     </div>
 </div>
 @endsection

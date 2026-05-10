@@ -30,6 +30,8 @@ class LanguageController extends Controller
 
         // Create the JSON file if it doesn't exist
         $path = base_path("lang/{$request->code}.json");
+        
+        // Laravel 11+ might use resources/lang, but base_path('lang') is standard for the root lang dir
         if (!File::exists($path)) {
             if (!File::exists(base_path('lang'))) {
                 File::makeDirectory(base_path('lang'), 0755, true);
@@ -37,15 +39,15 @@ class LanguageController extends Controller
             File::put($path, json_encode([], JSON_PRETTY_PRINT));
         }
 
-        return back()->with('success', 'Language added successfully.');
+        return back()->with('success', __('Language added successfully.'));
     }
 
     public function destroy(Language $language)
     {
         if ($language->is_default) {
-            return back()->with('error', 'Cannot delete default language.');
+            return back()->with('error', __('Cannot delete default language.'));
         }
         $language->delete();
-        return back()->with('success', 'Language deleted.');
+        return back()->with('success', __('Language deleted successfully.'));
     }
 }
