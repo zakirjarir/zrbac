@@ -350,8 +350,35 @@
                 <i class="fas fa-users"></i> User Management
             </a>
             
+            <div class="menu-label">Modules</div>
+            @php
+                $userModules = \{{namespace}}Models\Module::with('children')->whereNull('parent_id')->where('status', true)->get();
+            @endphp
+
+            @foreach($userModules as $uModule)
+                @if($uModule->children->count() > 0)
+                    <div class="nav-item has-dropdown {{ request()->is('rbac/m/'.$uModule->slug.'*') ? 'open' : '' }}" id="drop_{{ $uModule->id }}">
+                        <a href="javascript:void(0)" class="nav-link" onclick="toggleDropdown('drop_{{ $uModule->id }}')">
+                            <i class="{{ $uModule->icon ?? 'fas fa-folder' }}"></i> {{ $uModule->name }}
+                            <i class="fas fa-chevron-down arrow" style="margin-left: auto; font-size: 0.8rem;"></i>
+                        </a>
+                        <div class="dropdown-menu" style="padding-left: 1rem; display: {{ request()->is('rbac/m/'.$uModule->slug.'*') ? 'block' : 'none' }};">
+                            @foreach($uModule->children as $child)
+                                <a href="{{ route('rbac.module.page', $child->slug) }}" class="nav-link {{ request()->is('rbac/m/'.$child->slug) ? 'active' : '' }}" style="font-size: 0.9rem; padding: 0.6rem 1rem;">
+                                    <i class="{{ $child->icon ?? 'fas fa-file' }}" style="font-size: 0.9rem;"></i> {{ $child->name }}
+                                </a>
+                            @endforeach
+                        </div>
+                    </div>
+                @else
+                    <a href="{{ route('rbac.module.page', $uModule->slug) }}" class="nav-link {{ request()->is('rbac/m/'.$uModule->slug) ? 'active' : '' }}">
+                        <i class="{{ $uModule->icon ?? 'fas fa-folder' }}"></i> {{ $uModule->name }}
+                    </a>
+                @endif
+            @endforeach
+
             <a href="{{ route('rbac.modules.index') }}" class="nav-link {{ request()->routeIs('rbac.modules.*') ? 'active' : '' }}">
-                <i class="fas fa-layer-group"></i> Modules & Perms
+                <i class="fas fa-layer-group"></i> Manage Modules
             </a>
             
             <div class="menu-label">Settings</div>
@@ -434,6 +461,20 @@
 
         function toggleProfileDropdown() {
             document.querySelector('.profile-section').classList.toggle('active');
+        }
+
+        function toggleDropdown(id) {
+            const el = document.getElementById(id);
+            const menu = el.querySelector('.dropdown-menu');
+            const arrow = el.querySelector('.arrow');
+            
+            if (menu.style.display === 'none' || menu.style.display === '') {
+                menu.style.display = 'block';
+                arrow.style.transform = 'rotate(180deg)';
+            } else {
+                menu.style.display = 'none';
+                arrow.style.transform = 'rotate(0deg)';
+            }
         }
 
         // Close dropdown when clicking outside

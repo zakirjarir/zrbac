@@ -14,9 +14,16 @@ class ModuleController extends Controller
 {
     public function index()
     {
-        $modules = Module::with('permissions')->get();
+        $modules = Module::with(['permissions', 'children'])->whereNull('parent_id')->get();
         $allPermissions = Permission::distinct()->pluck('name')->toArray();
-        return view('rbac.modules.index', compact('modules', 'allPermissions'));
+        $parentModules = Module::whereNull('parent_id')->get();
+        return view('rbac.modules.index', compact('modules', 'allPermissions', 'parentModules'));
+    }
+
+    public function showModule($slug)
+    {
+        $module = Module::where('slug', $slug)->firstOrFail();
+        return view("rbac.pages.{$slug}", compact('module'));
     }
 
     public function generateSeeder()
@@ -69,8 +76,26 @@ class ModuleController extends Controller
     public function store(Request $request)
     {
         $request->validate(['name' => 'required|unique:modules,name']);
-        Module::create(['name' => $request->name, 'slug' => str($request->name)->slug(), 'icon' => $request->icon]);
-        return back()->with('success', 'Module created successfully.');
+        $slug = str($request->name)->slug();
+        
+        $module = Module::create([
+            'name' => $request->name, 
+            'slug' => $slug, 
+            'icon' => $request->icon ?? 'fas fa-folder',
+            'parent_id' => $request->parent_id
+        ]);
+
+        // Automatically create a blade file for this module
+        $viewPath = resource_path("views/rbac/pages/{$slug}.blade.php");
+        if (!File::exists(dirname($viewPath))) {
+            File::makeDirectory(dirname($viewPath), 0755, true);
+        }
+
+        $content = "@extends('rbac.layout')\n\n@section('content')\n<div class=\"card\">\n    <div class=\"card-header\">\n        <div class=\"card-title\">{{ \$module->name }} Page</div>\n    </div>\n    <div class=\"card-body\">\n        <p style=\"color: var(--text-muted);\">This is the automatically generated page for the <strong>{{ \$module->name }}</strong> module.</p>\n        <hr style=\"margin: 1.5rem 0; border: 0; border-top: 1px solid var(--border-light);\">\n        <p>You can edit this file at: <code style=\"background: var(--border-light); padding: 2px 6px; border-radius: 4px;\">resources/views/rbac/pages/{$slug}.blade.php</code></p>\n    </div>\n</div>\n@endsection";
+        
+        File::put($viewPath, $content);
+
+        return back()->with('success', 'Module created and Blade file generated successfully.');
     }
 
     public function addPermission(Request $request, Module $module)

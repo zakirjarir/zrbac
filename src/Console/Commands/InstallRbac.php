@@ -82,6 +82,7 @@ class InstallRbac extends Command
         $this->ensureDirectoryExists(resource_path('views/rbac/modules'));
         $this->ensureDirectoryExists(resource_path('views/rbac/users'));
         $this->ensureDirectoryExists(resource_path('views/rbac/profile'));
+        $this->ensureDirectoryExists(resource_path('views/rbac/pages'));
         $this->publishStub('views/layout.stub',        resource_path('views/rbac/layout.blade.php'), $replacements);
         $this->publishStub('views/dashboard.stub',     resource_path('views/rbac/dashboard.blade.php'), $replacements);
         $this->publishStub('views/roles/index.stub',   resource_path('views/rbac/roles/index.blade.php'), $replacements);
@@ -306,6 +307,7 @@ Route::group([
     Route::post('/users/{user}/roles',            'UserController@updateRoles')->name('users.roles.update');
     Route::get('/profile',                        'ProfileController@edit')->name('profile.edit');
     Route::post('/profile',                       'ProfileController@update')->name('profile.update');
+    Route::get('/m/{slug}',                       'ModuleController@showModule')->name('module.page');
     Route::get('/modules',                        'ModuleController@index')->name('modules.index');
     Route::post('/modules',                       'ModuleController@store')->name('modules.store');
     Route::delete('/modules/{module}',            'ModuleController@destroy')->name('modules.destroy');

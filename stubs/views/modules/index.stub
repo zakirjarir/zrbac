@@ -100,6 +100,16 @@
                 <input type="text" name="icon" class="form-control" placeholder="e.g., fas fa-users" value="fas fa-box">
                 <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">Find icons at fontawesome.com</p>
             </div>
+
+            <div class="form-group">
+                <label class="form-label">Parent Module (Optional)</label>
+                <select name="parent_id" class="form-control">
+                    <option value="">None (Top Level)</option>
+                    @foreach($parentModules as $pm)
+                        <option value="{{ $pm->id }}">{{ $pm->name }}</option>
+                    @endforeach
+                </select>
+            </div>
             
             <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 2rem;">
                 <button type="button" class="btn btn-outline" onclick="document.getElementById('addModuleModal').style.display='none'">Cancel</button>

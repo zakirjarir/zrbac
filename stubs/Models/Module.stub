@@ -8,7 +8,17 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Module extends Model
 {
-    protected $fillable = ['name', 'slug', 'icon', 'status'];
+    protected $fillable = ['name', 'slug', 'icon', 'status', 'parent_id'];
+
+    public function parent(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(Module::class, 'parent_id');
+    }
+
+    public function children(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Module::class, 'parent_id');
+    }
 
     public function permissions(): HasMany
     {
