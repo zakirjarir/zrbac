@@ -61,6 +61,7 @@ class InstallRbac extends Command
         $this->publishStub('Controllers/RoleController.stub',   app_path('Http/Controllers/Rbac/RoleController.php'),   $replacements);
         $this->publishStub('Controllers/ModuleController.stub', app_path('Http/Controllers/Rbac/ModuleController.php'), $replacements);
         $this->publishStub('Controllers/UserController.stub',   app_path('Http/Controllers/Rbac/UserController.php'),   $replacements);
+        $this->publishStub('Controllers/ProfileController.stub', app_path('Http/Controllers/Rbac/ProfileController.php'), $replacements);
 
         // ── 4.5. Auth Scaffolding ─────────────────────────────────────────────
         $this->section('Auth Scaffolding');
@@ -80,6 +81,7 @@ class InstallRbac extends Command
         $this->ensureDirectoryExists(resource_path('views/rbac/roles'));
         $this->ensureDirectoryExists(resource_path('views/rbac/modules'));
         $this->ensureDirectoryExists(resource_path('views/rbac/users'));
+        $this->ensureDirectoryExists(resource_path('views/rbac/profile'));
         $this->publishStub('views/layout.stub',        resource_path('views/rbac/layout.blade.php'), $replacements);
         $this->publishStub('views/dashboard.stub',     resource_path('views/rbac/dashboard.blade.php'), $replacements);
         $this->publishStub('views/roles/index.stub',   resource_path('views/rbac/roles/index.blade.php'), $replacements);
@@ -87,6 +89,7 @@ class InstallRbac extends Command
         $this->publishStub('views/roles/edit.stub',    resource_path('views/rbac/roles/edit.blade.php'), $replacements);
         $this->publishStub('views/modules/index.stub', resource_path('views/rbac/modules/index.blade.php'), $replacements);
         $this->publishStub('views/users/index.stub',   resource_path('views/rbac/users/index.blade.php'), $replacements);
+        $this->publishStub('views/profile/edit.stub',  resource_path('views/rbac/profile/edit.blade.php'), $replacements);
 
         // ── 6. Migration ──────────────────────────────────────────────────────
         $this->section('Migration');
@@ -218,14 +221,14 @@ class InstallRbac extends Command
         $routeContent = File::get($routeFile);
         $updated = false;
 
-        // ── Case 1: Routes exist but were written with 'auth' (old bug) ──────
-        if (Str::contains($routeContent, "'middleware' => ['web', 'auth']") && Str::contains($routeContent, 'RBAC Routes')) {
+        // ── Case 1: Ensure 'auth' middleware is present ──────
+        if (Str::contains($routeContent, "'middleware' => ['web']") && !Str::contains($routeContent, "'middleware' => ['web', 'auth']") && Str::contains($routeContent, 'RBAC Routes')) {
             $routeContent = str_replace(
-                "'middleware' => ['web', 'auth']",
                 "'middleware' => ['web']",
+                "'middleware' => ['web', 'auth']",
                 $routeContent
             );
-            $this->line("   <fg=green>✔  Fixed:</> Removed 'auth' from RBAC route middleware in routes/web.php");
+            $this->line("   <fg=green>✔  Fixed:</> Added 'auth' middleware to RBAC routes in routes/web.php");
             $this->fixed++;
             $updated = true;
         }
@@ -283,12 +286,14 @@ Route::group([
     'prefix'     => 'rbac',
     'as'         => 'rbac.',
     'namespace'  => 'App\Http\Controllers\Rbac',
-    'middleware' => ['web'],
+    'middleware' => ['web', 'auth'],
 ], function () {
     Route::get('/dashboard', function () { return view('rbac.dashboard'); })->name('dashboard');
     Route::resource('roles', 'RoleController');
     Route::get('/users',                          'UserController@index')->name('users.index');
     Route::post('/users/{user}/roles',            'UserController@updateRoles')->name('users.roles.update');
+    Route::get('/profile',                        'ProfileController@edit')->name('profile.edit');
+    Route::post('/profile',                       'ProfileController@update')->name('profile.update');
     Route::get('/modules',                        'ModuleController@index')->name('modules.index');
     Route::post('/modules',                       'ModuleController@store')->name('modules.store');
     Route::delete('/modules/{module}',            'ModuleController@destroy')->name('modules.destroy');

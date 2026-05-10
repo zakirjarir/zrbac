@@ -1,0 +1,53 @@
+@extends('rbac.layout')
+
+@section('content')
+<div style="max-width: 800px; margin: 0 auto;">
+    <div style="margin-bottom: 2rem;">
+        <h1 style="font-size: 1.8rem; font-weight: 700; color: var(--text-main); margin-bottom: 0.5rem;">Profile Settings</h1>
+        <p style="color: var(--text-muted);">Update your account information and password.</p>
+    </div>
+
+    <form action="{{ route('rbac.profile.update') }}" method="POST">
+        @csrf
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Personal Information</div>
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Full Name</label>
+                <input type="text" name="name" class="form-control" value="{{ old('name', $user->name) }}" required>
+                @error('name') <span style="color: var(--danger); font-size: 0.8rem;">{{ $message }}</span> @enderror
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Email Address</label>
+                <input type="email" name="email" class="form-control" value="{{ old('email', $user->email) }}" required>
+                @error('email') <span style="color: var(--danger); font-size: 0.8rem;">{{ $message }}</span> @enderror
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">Update Password</div>
+                <p style="color: var(--text-muted); font-size: 0.85rem;">Leave blank if you don't want to change it.</p>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">New Password</label>
+                <input type="password" name="password" class="form-control">
+                @error('password') <span style="color: var(--danger); font-size: 0.8rem;">{{ $message }}</span> @enderror
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Confirm New Password</label>
+                <input type="password" name="password_confirmation" class="form-control">
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: flex-end; gap: 1rem;">
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+        </div>
+    </form>
+</div>
+@endsection
