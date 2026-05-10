@@ -6,6 +6,7 @@ use {{namespace}}Http\Controllers\Controller;
 use {{namespace}}Models\Module;
 use {{namespace}}Models\Role;
 use {{namespace}}Models\Permission;
+use {{namespace}}Models\Language;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Validation\Rule;
