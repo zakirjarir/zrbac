@@ -230,6 +230,18 @@ class InstallRbac extends Command
             $updated = true;
         }
 
+        // ── Case 2: RBAC Routes exist but are missing the new User routes ──────
+        if (Str::contains($routeContent, 'RBAC Routes') && !Str::contains($routeContent, 'rbac.users.index')) {
+             $routeContent = str_replace(
+                "Route::resource('roles', 'RoleController');",
+                "Route::resource('roles', 'RoleController');\n    Route::get('/users',                          'UserController@index')->name('users.index');\n    Route::post('/users/{user}/roles',            'UserController@updateRoles')->name('users.roles.update');",
+                $routeContent
+            );
+            $this->line("   <fg=green>✔  Updated:</> Added missing User Management routes to existing RBAC block.");
+            $this->fixed++;
+            $updated = true;
+        }
+
         // ── Append Auth Routes if missing ────────────────────────────────────
         if (!Str::contains($routeContent, 'Authentication Routes')) {
             $authRoutes = <<<'ROUTES'
@@ -353,15 +365,11 @@ ROUTES;
         $routeContent = File::get($routeFile);
 
         if (Str::contains($routeContent, "'middleware' => ['web', 'auth']")) {
-            $fixed = str_replace(
-                "'middleware' => ['web', 'auth']",
-                "'middleware' => ['web']",
-                $routeContent
-            );
-            File::put($routeFile, $fixed);
-            $this->line("   <fg=green>✔  Fixed:</> Removed 'auth' from RBAC route middleware.");
+            $this->appendRoutes();
+            $this->line("   <fg=green>✔  Fixed:</> Repaired RBAC routes in routes/web.php");
         } else {
-            $this->line("   <fg=yellow>⊙  Nothing to fix:</> routes/web.php looks clean.");
+            // Even if middleware is fine, routes might be missing
+            $this->appendRoutes();
         }
 
         $this->info('');
