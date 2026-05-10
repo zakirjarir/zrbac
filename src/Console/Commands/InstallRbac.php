@@ -361,15 +361,25 @@ ROUTES;
         $this->info('🔧 Running fix mode...');
         $this->info('');
 
+        // 1. Fix Routes
         $routeFile    = base_path('routes/web.php');
         $routeContent = File::get($routeFile);
+        $this->appendRoutes();
 
-        if (Str::contains($routeContent, "'middleware' => ['web', 'auth']")) {
-            $this->appendRoutes();
-            $this->line("   <fg=green>✔  Fixed:</> Repaired RBAC routes in routes/web.php");
-        } else {
-            // Even if middleware is fine, routes might be missing
-            $this->appendRoutes();
+        // 2. Fix Database Index (if applicable)
+        try {
+            $indexes = \Illuminate\Support\Facades\DB::select("SHOW INDEX FROM permissions");
+            $hasOldIndex = collect($indexes)->contains(fn($i) => ($i->Key_name ?? $i->key_name) === 'permissions_slug_unique');
+
+            if ($hasOldIndex) {
+                $this->warn('   ⚠  Outdated unique index detected in permissions table. Fixing...');
+                \Illuminate\Support\Facades\DB::statement('ALTER TABLE permissions DROP INDEX permissions_slug_unique');
+                \Illuminate\Support\Facades\DB::statement('ALTER TABLE permissions ADD UNIQUE permissions_module_id_slug_unique (module_id, slug)');
+                $this->line("   <fg=green>✔  Fixed:</> Database index updated to allow duplicate permission names across modules.");
+                $this->fixed++;
+            }
+        } catch (\Throwable $e) {
+            $this->line("   <fg=gray>⊙  Skipped:</> Database index check (could not access database or table doesn't exist yet).");
         }
 
         $this->info('');
